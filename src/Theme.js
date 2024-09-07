@@ -18,6 +18,12 @@ const theme = createTheme({
       secondary: '#FFFFFF' // Cor do texto secundário (claro)
     },
   },
+  colors: {
+    primary: '#18E8DB',
+    secondary: '#F49841',
+    dark: '#282828',
+    light: '#FFFFFF'
+  },
   typography: {
     fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
   },
