@@ -6,7 +6,7 @@ const useStyles = makeStyles((theme) => ({
     container: {
         margin: theme.spacing(4, 24),
         [theme.breakpoints.down('md')]: {
-            margin: '400px 32px 32px 32px'
+            margin: '100px 32px 32px 32px'
         },
     },
     title: {

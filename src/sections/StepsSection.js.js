@@ -44,13 +44,13 @@ const StepsSection = () => {
 
     return (
         <Grid container className={classes.container} justifyContent={"center"} spacing={2}>
-            <Grid size={12}>
+            <Grid size={12} data-aos="fade-down">
                 <Typography className={classes.title} variant='h3'>COMO FUNCIONA ?</Typography>
             </Grid>
-            <Grid size={12}>
+            <Grid size={12} data-aos="fade-left">
                 <Typography className={classes.subtitle} variant='subtitle1'>TEMOS UM PROCESSO COMPLETO PARA GARANTIR A MELHOR PROPOSTA.</Typography>
             </Grid>
-            <Grid size={12}>
+            <Grid size={12}  data-aos="zoom-in">
                 <Box sx={{ flexGrow: 1 }}>
 
                     <Grid container className={classes.stepsContainer} justifyContent={"center"} spacing={6} >

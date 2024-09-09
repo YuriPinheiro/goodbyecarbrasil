@@ -1,29 +1,33 @@
 import { makeStyles } from '@mui/styles';
-import BackgroundImage from '../../assets/LojistaBackground.jpg';
 import { alpha } from '@mui/material/styles'; // Importando a função alpha
 
 
 // Definindo estilos com makeStyles
 const useStyles = makeStyles((theme) => ({
-    parallaxContainer: {
-        backgroundAttachment: 'fixed', // fundo fixo para o efeito de parallax
-        backgroundPosition: 'center', // posição da imagem
-        backgroundRepeat: 'no-repeat', // imagem não se repete
-        backgroundSize: 'cover', // cobre todo o conteúdo da div
-        display: 'flex',
-        transition: 'height 0.5s ease', // Adiciona uma transição suave para a altura
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${BackgroundImage})`, // gradiente sobre a imagem de fundo
-        color: 'white', // cor do texto
+    container: {
+        backgroundColor: theme.colors.dark,
+        color: theme.colors.light,
         padding: theme.spacing(4, 24),
         [theme.breakpoints.down('md')]: {
-            padding: theme.spacing(4, 4),
-        }
+            padding: '32px 32px 32px 32px'
+        },
     },
     title: {
-        fontSize: "30px!important",
+        fontSize: "40px!important",
         fontWeight: 600 + '!important',
-        textAlign: 'center!important',
-        textTransform: 'uppercase',
+        textAlign: 'center!important'
+    },
+    contactItem: {
+        fontSize: "24px!important",
+    },
+    form: {
+        position: 'relative',
+        zIndex: 2,
+        color: 'white', // Ajuste conforme necessário
+        padding: theme.spacing(3, 6),
+        [theme.breakpoints.down('md')]: {
+            padding: theme.spacing(4, 2),
+        },
     },
     textField: {
         '& .MuiInputBase-root': {
@@ -47,28 +51,17 @@ const useStyles = makeStyles((theme) => ({
             },
         },
     },
-    form: {
-        position: 'relative',
-        zIndex: 2,
-        color: 'white', // Ajuste conforme necessário
-        padding: theme.spacing(3, 24),
-        [theme.breakpoints.down('md')]: {
-            padding: theme.spacing(4, 2),
-        },
-    },
     formCard: {
         backgroundColor: alpha(theme.colors.primary, .8) + "!important",
         margin: "24px",
         borderRadius: "12px!important",
         padding: theme.spacing(1, 2),
+        width: "322px"
     },
     formButton: {
         backgroundColor: theme.colors.dark+'!important',
         color: theme.colors.light+'!important'
     },
-    label:{
-        textAlign: 'left'
-    }
 }));
 
 export default useStyles;
