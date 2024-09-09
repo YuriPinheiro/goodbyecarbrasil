@@ -65,9 +65,6 @@ const useStyles = makeStyles((theme) => ({
         '& .MuiOutlinedInput-root': {
             backgroundColor: theme.colors.light, // Fundo branco
             border: '1px solid black',
-            '&:hover fieldset': {
-                borderColor: theme.palette.text.primary, // Borda preta ao passar o mouse
-            },
             '&.Mui-focused fieldset': {
                 border: '1px solid black',
             },
@@ -95,7 +92,6 @@ const useStyles = makeStyles((theme) => ({
         },
         '& .MuiOutlinedInput-root': {
             '& fieldset': {
-                borderColor: 'black', // Cor da borda padrão
             },
             '&.Mui-focused fieldset': {
                 border: '1px solid black', // Cor da borda quando está em foco

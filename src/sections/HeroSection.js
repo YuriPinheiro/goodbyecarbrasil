@@ -98,8 +98,6 @@ const HeroSection = () => {
                                                                         color: '#18E8DB',
                                                                         borderRadius: '0px',
                                                                         borderWidth: '1px',
-                                                                        borderColor: '#282828',
-                                                                        border: '1px solid',
                                                                         backgroundColor: '#282828',
                                                                     }
                                                                 },
