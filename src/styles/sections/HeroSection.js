@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
         zIndex: 2,
         color: 'white', // Ajuste conforme necessário
-        padding: theme.spacing(3, 24),
+        padding: theme.spacing(3, 22),
         [theme.breakpoints.down('md')]: {
             padding: theme.spacing(35, 2),
         },

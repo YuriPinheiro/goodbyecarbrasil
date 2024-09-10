@@ -8,12 +8,18 @@ import { ReactComponent as InstagramIcon } from "../assets/InstagramIcon.svg";
 import { ReactComponent as WhatsappIcon } from "../assets/WhatsappIcon.svg";
 import { ReactComponent as PhoneIcon } from "../assets/PhoneIcon.svg";
 
+
 const Header = () => {
     const classes = useStyles(); // Usando o hook de estilos
 
     const theme = useTheme(); // Para usar os breakpoints
     const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Verifica se a tela é menor que 'md'
 
+    const onClickSocial = (social) => {
+        if(social === 'linkedin'){
+            window.open("https://br.linkedin.com", '_blank'); 
+        }
+    }
 
     return (
         <AppBar position="static" className={classes.appBar}>
@@ -22,7 +28,7 @@ const Header = () => {
                     alignItems="center" // Alinhamento vertical dos itens
                     justifyContent="space-between" // Espaço entre os itens
                     direction={isMobile ? "column" : "row"}
-                    sx={{width:"100%"}}
+                    sx={{ width: "100%" }}
                     spacing={2}
                     className={classes.container}>
                     {/* Logotipo ou Título */}
@@ -33,7 +39,7 @@ const Header = () => {
                     {/* Seção com a cidade e redes sociais */}
 
                     <Grid item>
-                        <Grid container spacing={isMobile ? 1 : 4} alignItems={"center"}  direction={isMobile ? "column" : "row"}>
+                        <Grid container spacing={isMobile ? 1 : 4} alignItems={"center"} direction={isMobile ? "column" : "row"}>
                             <Grid item xs>
                                 <Grid container direction="column" alignItems={"center"} spacing={1}>
                                     {/* Nome da cidade */}
@@ -45,7 +51,9 @@ const Header = () => {
                                     <Grid item>
                                         <Grid container spacing={1}>
                                             <Grid item>
-                                                <LinkedinIcon />
+                                                <div onClick={()=>{onClickSocial('linkedin')}}>
+                                                    <LinkedinIcon />
+                                                </div>
                                             </Grid>
                                             <Grid item>
                                                 <InstagramIcon />
@@ -58,7 +66,7 @@ const Header = () => {
                                 </Grid>
                             </Grid>
                             {!isMobile && <Divider orientation="vertical" sx={{ background: "white" }} variant="middle" flexItem />}
-                            
+
                             <Grid item xs>
                                 <Grid container alignItems={"center"} spacing={1}>
                                     <Grid item sx={{ marginTop: "10px" }}>

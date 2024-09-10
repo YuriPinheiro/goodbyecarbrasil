@@ -24,7 +24,10 @@ const useStyles = makeStyles((theme) => ({
         textTransform: 'uppercase',
     },
     itensContainer: {
-        margin: theme.spacing(2, 10)
+        margin: theme.spacing(2, 10),
+        [theme.breakpoints.down('md')]: {
+            margin: theme.spacing(2, 4),
+        },
     },
     advantageTitle: {
         fontSize: "24px!important",
