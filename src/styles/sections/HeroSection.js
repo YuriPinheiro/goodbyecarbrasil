@@ -14,6 +14,9 @@ const useStyles = makeStyles((theme) => ({
         backgroundRepeat: 'no-repeat',
         margin: 0, // Remove margens que podem limitar a largura
         padding: 0, // Remove preenchimento que pode limitar a largura
+        [theme.breakpoints.down('md')]: {
+            height: "125vh"
+        }
     },
     overlay: {
         position: 'absolute',
@@ -54,7 +57,10 @@ const useStyles = makeStyles((theme) => ({
         margin: "24px",
         borderRadius: "12px!important",
         padding: theme.spacing(1, 2),
-        width: "322px"
+        width: "322px",
+        [theme.breakpoints.down('md')]: {
+            width: "auto",
+        },
     },
     button: {
         color: theme.colors.light + "!important",

@@ -17,7 +17,7 @@ const AboutSection = () => {
                     <Typography className={classes.title} variant='h3'>SOBRE NÓS</Typography>
                 </Grid>
                 <Grid size={12} data-aos={'zoom-in-up'}>
-                    <Typography className={classes.subtitle} variant='subtitle1'>Somos uma empresa séria que prioriza o cliente e garante bons resultados para a negociação do seu veículo.</Typography>
+                    <Typography className={classes.subtitle} variant='subtitle1'>Somos uma empresa séria que prioriza o cliente e garantimos ótimos resultados para a negociação do seu veículo.</Typography>
                 </Grid>
 
                 <Grid size={12} data-aos={"flip-down"}>

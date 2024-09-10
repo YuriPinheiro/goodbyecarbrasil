@@ -65,20 +65,20 @@ const Header = () => {
 
                                         {/* Logos das redes sociais */}
                                         <Grid item>
-                                            <Grid container spacing={1}>
+                                            <Grid container spacing={isMobile ? 2 : 1}>
                                                 <Grid item>
                                                     <div onClick={() => { onClickSocial('linkedin') }}>
-                                                        <LinkedinIcon />
+                                                        <LinkedinIcon width={isMobile ? '24px' : '16px'} height={isMobile ? '24px' : '16px'} />
                                                     </div>
                                                 </Grid>
                                                 <Grid item>
                                                     <div onClick={() => { onClickSocial('instagram') }}>
-                                                        <InstagramIcon />
+                                                        <InstagramIcon width={isMobile ? '24px' : '16px'} height={isMobile ? '24px' : '16px'} />
                                                     </div>
                                                 </Grid>
                                                 <Grid item>
                                                     <div onClick={() => { onClickSocial('whatsapp') }}>
-                                                        <WhatsappIcon />
+                                                        <WhatsappIcon width={isMobile ? '24px' : '16px'} height={isMobile ? '24px' : '16px'} />
                                                     </div>
                                                 </Grid>
                                             </Grid>

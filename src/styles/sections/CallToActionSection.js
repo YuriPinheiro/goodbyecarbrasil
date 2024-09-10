@@ -19,6 +19,9 @@ const useStyles = makeStyles((theme) => ({
     },
     contactItem: {
         fontSize: "24px!important",
+        [theme.breakpoints.down('md')]: {
+            fontSize: "1.1rem!important",
+        },
     },
     form: {
         position: 'relative',
