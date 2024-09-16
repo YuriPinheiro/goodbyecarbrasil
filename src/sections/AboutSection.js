@@ -7,7 +7,7 @@ import { Box, Typography } from '@mui/material';
 
 const AboutSection = () => {
 
-    const classes = useStyles(); // Usando o hook de estilos
+    const classes = useStyles();
 
 
     return (
@@ -29,16 +29,16 @@ const AboutSection = () => {
                             <Grid size={12} sx={{ textAlign: 'center' }}>
                                 <Box
                                     component="video"
-                                    src="/videos/GoodbyerCarBrasil.mp4" // Substitua pela URL do seu vídeo
+                                    src="/videos/GoodbyerCarBrasil.mp4"
                                     controls
                                     autoPlay
                                     loop
                                     muted
                                     sx={{
-                                        width: '80%', // O vídeo ocupará 100% da largura do seu container
-                                        maxHeight: '500px', // Limite opcional para a altura do vídeo
-                                        borderRadius: '8px', // Arredondamento opcional dos cantos
-                                        boxShadow: 3, // Sombra opcional para o vídeo
+                                        width: '80%',
+                                        maxHeight: '500px',
+                                        borderRadius: '8px', 
+                                        boxShadow: 3, 
                                     }}
                                 />
                             </Grid>

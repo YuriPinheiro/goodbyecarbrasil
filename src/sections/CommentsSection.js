@@ -44,16 +44,16 @@ const CommentsSection = () => {
         });
     }, []);
 
-    const classes = useStyles(); // Usando o hook de estilos
+    const classes = useStyles(); 
 
     const settings = {
-        dots: true, // Mostrar pontos de navegação
-        infinite: true, // Carrossel infinito
-        speed: 500, // Velocidade da transição
-        slidesToShow: 1, // Número de slides visíveis
-        slidesToScroll: 1, // Número de slides a rolar
-        autoplay: true, // Ativar autoplay
-        autoplaySpeed: 5000, // Intervalo do autoplay
+        dots: true, 
+        infinite: true, 
+        speed: 500, 
+        slidesToShow: 1, 
+        slidesToScroll: 1, 
+        autoplay: true, 
+        autoplaySpeed: 5000, 
     };
 
     const getInitial = (name) => {

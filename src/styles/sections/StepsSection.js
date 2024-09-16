@@ -1,7 +1,7 @@
 import { makeStyles } from '@mui/styles';
 
 
-// Definindo estilos com makeStyles
+
 const useStyles = makeStyles((theme) => ({
     container: {
         margin: theme.spacing(4, 24),

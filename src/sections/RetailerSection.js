@@ -82,7 +82,6 @@ const RetailerSection = () => {
 
         const data = formValues;
 
-        // Formatar a mensagem
         const message = `
 Olá, sou lojista e estou entrando em contato através do site!   
 
@@ -102,10 +101,8 @@ ${data.phone}
 ${data.city}
 `.trim();
 
-        // Codificar a mensagem para URL
         const encodedMessage = encodeURIComponent(message);
 
-        // Construir a URL do WhatsApp
         const url = `${LocalConfig.whatsappURL}?text=${encodedMessage}`;
 
         window.open(url, '_blank');

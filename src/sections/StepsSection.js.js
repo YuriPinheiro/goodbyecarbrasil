@@ -14,7 +14,7 @@ const steps = [
 
 const StepsSection = () => {
 
-    const classes = useStyles(); // Usando o hook de estilos
+    const classes = useStyles(); 
 
     const StepCircle = (props) => {
 

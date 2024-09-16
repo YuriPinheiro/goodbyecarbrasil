@@ -12,14 +12,13 @@ import ScrollNavigationBar from './ScrollNavigator';
 
 const phoneNumber = "(54) 98170-2266";
 
-// Formatar o número de telefone removendo caracteres não numéricos
 const formattedPhoneNumber = phoneNumber.replace(/\D/g, '');
 
 const Header = () => {
-    const classes = useStyles(); // Usando o hook de estilos
+    const classes = useStyles(); 
 
-    const theme = useTheme(); // Para usar os breakpoints
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Verifica se a tela é menor que 'md'
+    const theme = useTheme(); 
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm')); 
 
     const onClickSocial = (social) => {
         if (social === 'linkedin') {
@@ -41,29 +40,26 @@ const Header = () => {
             <AppBar position="static" className={classes.appBar}>
                 <Toolbar>
                     <Grid container
-                        alignItems="center" // Alinhamento vertical dos itens
-                        justifyContent="space-between" // Espaço entre os itens
+                        alignItems="center" 
+                        justifyContent="space-between" 
                         direction={isMobile ? "column" : "row"}
                         sx={{ width: "100%" }}
                         spacing={2}
                         className={classes.container}>
-                        {/* Logotipo ou Título */}
+                       
                         <Grid item>
                             <img src={LogoText} alt="Logo" width={190} />
                         </Grid>
-
-                        {/* Seção com a cidade e redes sociais */}
 
                         <Grid item>
                             <Grid container spacing={isMobile ? 1 : 4} alignItems={"center"} direction={isMobile ? "column" : "row"}>
                                 <Grid item xs>
                                     <Grid container direction="column" alignItems={"center"} spacing={1}>
-                                        {/* Nome da cidade */}
+                                       
                                         <Grid item>
                                             <Typography sx={{ color: "white", fontSize: "16px", fontWeight: 300 }}>Caxias do Sul - RS</Typography>
                                         </Grid>
 
-                                        {/* Logos das redes sociais */}
                                         <Grid item>
                                             <Grid container spacing={isMobile ? 2 : 1}>
                                                 <Grid item>

@@ -1,8 +1,7 @@
 import { makeStyles } from '@mui/styles';
-import { alpha } from '@mui/material/styles'; // Importando a função alpha
+import { alpha } from '@mui/material/styles';
 
 
-// Definindo estilos com makeStyles
 const useStyles = makeStyles((theme) => ({
     container: {
         backgroundColor: theme.colors.dark,
@@ -26,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     form: {
         position: 'relative',
         zIndex: 2,
-        color: 'white', // Ajuste conforme necessário
+        color: 'white', 
         padding: theme.spacing(3, 6),
         [theme.breakpoints.down('md')]: {
             padding: theme.spacing(4, 2),

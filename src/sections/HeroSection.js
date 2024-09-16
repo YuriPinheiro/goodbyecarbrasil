@@ -22,9 +22,9 @@ function MaskedTextField({ mask, value, onChange, ...props }) {
                     {...inputProps}
                     {...props}
                     inputRef={(ref) => {
-                        inputRef.current = ref; // Atualiza a referência local
+                        inputRef.current = ref; 
                         if (inputProps.ref) {
-                            inputProps.ref(ref); // Atualiza a referência do InputMask
+                            inputProps.ref(ref);
                         }
                     }}
                 />
@@ -38,7 +38,7 @@ const HeroSection = () => {
     const [form, setForm] = useState({});
     const [error, setError] = useState(false);
 
-    const classes = useStyles(); // Usando o hook de estilos
+    const classes = useStyles();
 
     useEffect(() => {
         console.log(form);
@@ -54,7 +54,6 @@ const HeroSection = () => {
 
         const data = form;
 
-        // Formatar a mensagem
         const message = `
 Olá, estou entrando em contato através do site!   
 
@@ -71,10 +70,9 @@ ${data.model}
 ${data.year}
 `.trim();
 
-        // Codificar a mensagem para URL
         const encodedMessage = encodeURIComponent(message);
 
-        // Construir a URL do WhatsApp
+       
         const url = `${LocalConfig.whatsappURL}?text=${encodedMessage}`;
 
         window.open(url, '_blank');
@@ -97,7 +95,6 @@ ${data.year}
             <Grid container className={classes.container} justifyContent={"center"}>
                 <div className={classes.overlay} />
                 <Grid size={{ xs: 12, md: 6 }} className={classes.content}>
-                    {/* Coloque o conteúdo aqui */}
                     <Typography variant='h2' className={classes.title}>Venda seu carro sem burocracia.</Typography>
                     <Typography variant='h5'>Adeus carro, olá dinheiro!</Typography>
                 </Grid>
@@ -178,8 +175,8 @@ ${data.year}
                                                             <DatePicker
                                                                 className={classes.datePicker}
                                                                 views={['year']}
-                                                                minDate={moment('2005-01-01')} // Definindo a data mínima como 2005
-                                                                maxDate={moment('2024-12-31')} // Definindo a data máxima como 2024
+                                                                minDate={moment('2000-01-01')}
+                                                                maxDate={moment('2025-12-31')}
                                                                 placeholder={"2024"}
                                                                 onChange={onChangeYear}
                                                                 error={error}
@@ -193,8 +190,8 @@ ${data.year}
                                                                         }
                                                                     },
                                                                     textField: {
-                                                                        size: 'small', // Define o tamanho do campo de entrada como 'small' ou 'medium'
-                                                                        placeholder: 'Escolha um ano', // Define o placeholder do campo
+                                                                        size: 'small', 
+                                                                        placeholder: 'Escolha um ano',
                                                                     },
                                                                 }}
                                                             />

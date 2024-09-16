@@ -1,19 +1,19 @@
 import { makeStyles } from '@mui/styles';
 import BackgroundImage from '../../assets/LojistaBackground.jpg';
-import { alpha } from '@mui/material/styles'; // Importando a função alpha
+import { alpha } from '@mui/material/styles'; 
 
 
-// Definindo estilos com makeStyles
+
 const useStyles = makeStyles((theme) => ({
     parallaxContainer: {
-        backgroundAttachment: 'fixed', // fundo fixo para o efeito de parallax
-        backgroundPosition: 'center', // posição da imagem
-        backgroundRepeat: 'no-repeat', // imagem não se repete
-        backgroundSize: 'cover', // cobre todo o conteúdo da div
+        backgroundAttachment: 'fixed', 
+        backgroundPosition: 'center', 
+        backgroundRepeat: 'no-repeat', 
+        backgroundSize: 'cover', 
         display: 'flex',
-        transition: 'height 0.5s ease', // Adiciona uma transição suave para a altura
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${BackgroundImage})`, // gradiente sobre a imagem de fundo
-        color: 'white', // cor do texto
+        transition: 'height 0.5s ease', 
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${BackgroundImage})`, 
+        color: 'white', 
         padding: theme.spacing(4, 24),
         [theme.breakpoints.down('md')]: {
             padding: theme.spacing(4, 4),
@@ -27,30 +27,30 @@ const useStyles = makeStyles((theme) => ({
     },
     textField: {
         '& .MuiInputBase-root': {
-            color: 'black', // Cor do texto de entrada
-            backgroundColor: '#FFFFFF', // Fundo branco
+            color: 'black',
+            backgroundColor: '#FFFFFF', 
         },
         '& .MuiInputLabel-root': {
-            color: 'black', // Cor do texto do label
+            color: 'black', 
         },
         '& .MuiInputLabel-root.Mui-focused': {
-            color: 'black', // Cor do texto do label quando está em foco
+            color: 'black', 
         },
         '& .MuiInputLabel-root.MuiFormLabel-filled': {
-            color: 'black', // Cor do texto do label quando o campo está preenchido
+            color: 'black', 
         },
         '& .MuiOutlinedInput-root': {
             '& fieldset': {
             },
             '&.Mui-focused fieldset': {
-                border: '1px solid black', // Cor da borda quando está em foco
+                border: '1px solid black', 
             },
         },
     },
     form: {
         position: 'relative',
         zIndex: 2,
-        color: 'white', // Ajuste conforme necessário
+        color: 'white',
         padding: theme.spacing(3, 24),
         [theme.breakpoints.down('md')]: {
             padding: theme.spacing(4, 2),

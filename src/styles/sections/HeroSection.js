@@ -1,19 +1,19 @@
 import { makeStyles } from '@mui/styles';
-import { alpha } from '@mui/material/styles'; // Importando a função alpha
+import { alpha } from '@mui/material/styles'; 
 import BackgroundImage from '../../assets/LogoCompleto.jpg';
 
-// Definindo estilos com makeStyles
+
 const useStyles = makeStyles((theme) => ({
     container: {
         position: 'relative',
         width: '100%',
-        height: '100vh', // Ajuste conforme necessário
+        height: '100vh', 
         backgroundImage: `url(${BackgroundImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        margin: 0, // Remove margens que podem limitar a largura
-        padding: 0, // Remove preenchimento que pode limitar a largura
+        margin: 0, 
+        padding: 0, 
         [theme.breakpoints.down('md')]: {
             height: "125vh"
         }
@@ -24,14 +24,14 @@ const useStyles = makeStyles((theme) => ({
         left: 0,
         width: '100%',
         height: '100%',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Escurecimento (preto com 50% de opacidade)
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', 
         zIndex: 1,
     },
     content: {
         position: 'relative',
         zIndex: 2,
         maxWidth: "50%",
-        color: 'white', // Ajuste conforme necessário
+        color: 'white', 
         padding: theme.spacing(12, 12, 12, 24),
         [theme.breakpoints.down('md')]: {
             padding: theme.spacing(1, 2),
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     form: {
         position: 'relative',
         zIndex: 2,
-        color: 'white', // Ajuste conforme necessário
+        color: 'white', 
         padding: theme.spacing(3, 22),
         [theme.breakpoints.down('md')]: {
             padding: theme.spacing(30, 2),
@@ -69,38 +69,38 @@ const useStyles = makeStyles((theme) => ({
     datePicker: {
         width: "100%",
         '& .MuiOutlinedInput-root': {
-            backgroundColor: theme.colors.light, // Fundo branco
+            backgroundColor: theme.colors.light,
             border: '1px solid black',
             '&.Mui-focused fieldset': {
                 border: '1px solid black',
             },
         },
         '& .MuiInputLabel-root': {
-            color: theme.palette.text.primary, // Cor do label padrão (preta)
+            color: theme.palette.text.primary, 
         },
         '& .MuiInputLabel-root.Mui-focused': {
-            color: theme.palette.text.primary, // Cor do label quando está em foco (preta)
+            color: theme.palette.text.primary, 
         },
     },
     textField: {
         '& .MuiInputBase-root': {
-            color: 'black', // Cor do texto de entrada
-            backgroundColor: '#FFFFFF', // Fundo branco
+            color: 'black',
+            backgroundColor: '#FFFFFF', 
         },
         '& .MuiInputLabel-root': {
-            color: 'black', // Cor do texto do label
+            color: 'black', 
         },
         '& .MuiInputLabel-root.Mui-focused': {
-            color: 'black', // Cor do texto do label quando está em foco
+            color: 'black', 
         },
         '& .MuiInputLabel-root.MuiFormLabel-filled': {
-            color: 'black', // Cor do texto do label quando o campo está preenchido
+            color: 'black', 
         },
         '& .MuiOutlinedInput-root': {
             '& fieldset': {
             },
             '&.Mui-focused fieldset': {
-                border: '1px solid black', // Cor da borda quando está em foco
+                border: '1px solid black', 
             },
         },
     },

@@ -13,7 +13,7 @@ import LocalConfig from '../LocalConfig';
 
 const CallToActionSection = () => {
 
-    const classes = useStyles(); // Usando o hook de estilos
+    const classes = useStyles(); 
 
     const [formValues, setFormValues] = useState({
         name: "",
@@ -39,7 +39,6 @@ const CallToActionSection = () => {
 
         const data = formValues;
 
-        // Formatar a mensagem
         const message = `
 Olá, me chamo ${data.name}.
 
@@ -48,10 +47,8 @@ ${data.message}
 Contato: ${data.contact}
 `.trim();
 
-        // Codificar a mensagem para URL
         const encodedMessage = encodeURIComponent(message);
 
-        // Construir a URL do WhatsApp
         const url = `${LocalConfig.whatsappURL}?text=${encodedMessage}`;
 
         window.open(url, '_blank');

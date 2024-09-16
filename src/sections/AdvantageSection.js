@@ -7,7 +7,7 @@ import { Box, Divider, Typography } from '@mui/material';
 
 const AdvantageSection = () => {
 
-    const classes = useStyles(); // Usando o hook de estilos
+    const classes = useStyles(); 
 
     const AdvantageItem = (props) => {
 
@@ -35,7 +35,6 @@ const AdvantageSection = () => {
             <Grid size={12}>
                 <Box sx={{ flexGrow: 1 }}>
                     <Grid container className={classes.itensContainer} spacing={4} justifyContent={'center'}>
-                        {/* Coluna da esquerda */}
                         <Grid size={{ xs: 12, md: 5 }}>
                             <Box sx={{ flexGrow: 1 }}  data-aos={"fade-right"}>
                                 <AdvantageItem

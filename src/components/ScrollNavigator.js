@@ -8,7 +8,6 @@ const ScrollNavigationBar = () => {
     const [show, setShow] = useState(false);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-    // Hook para verificar se a tela é de um dispositivo móvel
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -39,7 +38,6 @@ const ScrollNavigationBar = () => {
                 behavior: 'smooth',
             });
 
-            // Fecha o menu caso esteja em um dispositivo móvel
             if (isMobile) {
                 setIsDrawerOpen(false);
             }
@@ -52,7 +50,6 @@ const ScrollNavigationBar = () => {
                 <Toolbar>
                     {isMobile ? (
                         <>
-                            {/* Ícone do menu para dispositivos móveis */}
                             <IconButton
                                 edge="start"
                                 color="inherit"
@@ -62,7 +59,6 @@ const ScrollNavigationBar = () => {
                                 <MenuIcon />
                             </IconButton>
                             <Typography>GoodbyeCarBrasil</Typography>
-                            {/* Menu Drawer para dispositivos móveis */}
                             <Drawer
                                 anchor="left"
                                 open={isDrawerOpen}
@@ -86,7 +82,6 @@ const ScrollNavigationBar = () => {
                         </>
                     ) : (
                         <>
-                            {/* Botões para navegação em telas maiores */}
                             <Button color="inherit" onClick={() => scrollToSection('home-section')}>
                                 <Typography className={classes.menuItem}>
                                     Início
