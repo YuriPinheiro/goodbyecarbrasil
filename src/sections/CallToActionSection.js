@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Grid from "@mui/material/Grid2";
 
 import useStyles from '../styles/sections/CallToActionSection';
@@ -8,9 +8,54 @@ import { ReactComponent as PhoneContactIcon } from "../assets/PhoneContactIcon.s
 import { ReactComponent as HomeContactIcon } from "../assets/HomeContactIcon.svg";
 import { ReactComponent as HourContactIcon } from "../assets/HourContactIcon.svg";
 import { ReactComponent as EmailContactIcon } from "../assets/EmailContactIcon.svg";
+
+import LocalConfig from '../LocalConfig';
+
 const CallToActionSection = () => {
 
     const classes = useStyles(); // Usando o hook de estilos
+
+    const [formValues, setFormValues] = useState({
+        name: "",
+        contact: "",
+        message: ""
+    });
+
+    const [error, setError] = useState(false);
+
+    const onChange = (event) => {
+        const { name, value } = event.target;
+        setFormValues({
+            ...formValues,
+            [name]: value
+        })
+    }
+
+    const onClickSend = () => {
+        if (!formValues.name || !formValues.contact || !formValues.message) {
+            setError(true);
+            return
+        }
+
+        const data = formValues;
+
+        // Formatar a mensagem
+        const message = `
+Olá, me chamo ${data.name}.
+
+${data.message}
+
+Contato: ${data.contact}
+`.trim();
+
+        // Codificar a mensagem para URL
+        const encodedMessage = encodeURIComponent(message);
+
+        // Construir a URL do WhatsApp
+        const url = `${LocalConfig.whatsappURL}?text=${encodedMessage}`;
+
+        window.open(url, '_blank');
+    }
 
 
     return (
@@ -30,7 +75,11 @@ const CallToActionSection = () => {
                                             <PhoneContactIcon />
                                         </Grid>
                                         <Grid size={10}>
-                                            <Typography className={classes.contactItem}>(54) 99999-9999</Typography>
+                                            <Typography className={classes.contactItem}>
+                                                <a href={`tel:5554981702266`} style={{ color: 'inherit', textDecoration: 'none' }}>
+                                                    (54) 8170-2266
+                                                </a>
+                                            </Typography>
                                         </Grid>
                                     </Grid>
                                 </Box>
@@ -66,7 +115,11 @@ const CallToActionSection = () => {
                                             <EmailContactIcon />
                                         </Grid>
                                         <Grid size={10}>
-                                            <Typography className={classes.contactItem}>goodbyecarbrasil@gmail.com</Typography>
+                                            <Typography className={classes.contactItem}>
+                                                <a href="mailto:goodbyecarbrasil@gmail.com" style={{ color: 'inherit', textDecoration: 'none' }}>
+                                                    goodbyecarbrasil@gmail.com
+                                                </a>
+                                            </Typography>
                                         </Grid>
                                     </Grid>
                                 </Box>
@@ -88,7 +141,7 @@ const CallToActionSection = () => {
                                                         <Typography className={classes.label}>Nome</Typography>
                                                     </Grid>
                                                     <Grid size={12}>
-                                                        <TextField fullWidth placeholder={"João da Silva"} id="outlined-basic" size='small' variant="outlined" className={classes.textField} />
+                                                        <TextField fullWidth name='name' error={error} onChange={onChange} placeholder={"João da Silva"} id="outlined-basic" size='small' variant="outlined" className={classes.textField} />
                                                     </Grid>
                                                 </Grid>
                                             </Box>
@@ -100,7 +153,7 @@ const CallToActionSection = () => {
                                                         <Typography className={classes.label}>Telefone</Typography>
                                                     </Grid>
                                                     <Grid size={12}>
-                                                        <TextField fullWidth placeholder={"(99) 99999-9999"} id="outlined-basic" size='small' variant="outlined" className={classes.textField} />
+                                                        <TextField fullWidth name='contact' error={error} onChange={onChange} placeholder={"Telefone ou Email"} id="outlined-basic" size='small' variant="outlined" className={classes.textField} />
                                                     </Grid>
                                                 </Grid>
                                             </Box>
@@ -112,13 +165,13 @@ const CallToActionSection = () => {
                                                         <Typography className={classes.label}>Mensagem</Typography>
                                                     </Grid>
                                                     <Grid size={12}>
-                                                        <TextField fullWidth multiline placeholder={"Gostaria de agendar uma avaliação"} id="outlined-basic" size='small' variant="outlined" className={classes.textField} />
+                                                        <TextField fullWidth multiline name='message' error={error} onChange={onChange} placeholder={"Gostaria de agendar uma avaliação"} id="outlined-basic" size='small' variant="outlined" className={classes.textField} />
                                                     </Grid>
                                                 </Grid>
                                             </Box>
                                         </Grid>
                                         <Grid size={12}>
-                                            <Button className={classes.formButton} fullWidth variant='outlined'>Enviar</Button>
+                                            <Button className={classes.formButton} onClick={onClickSend} fullWidth variant='outlined'>Enviar</Button>
                                         </Grid>
                                     </Grid>
                                 </Box>

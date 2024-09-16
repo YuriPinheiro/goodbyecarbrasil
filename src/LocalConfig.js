@@ -1,5 +1,5 @@
 const LocalConfig = {
-    whatsappURL: "https://wa.me/5555984479160"
+    whatsappURL: "https://wa.me/555481702266"
 }
 
 export default LocalConfig;

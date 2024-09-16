@@ -1,29 +1,114 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Grid from "@mui/material/Grid2";
-
 import useStyles from '../styles/sections/RetailerSection';
 import { Box, Button, Card, CardContent, Grow, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
+import LocalConfig from "../LocalConfig";
+import InputMask from 'react-input-mask';
 
-const initialHeight = "200px"
+
+const initialHeight = "200px";
+
+
+function MaskedTextField({ mask, value, onChange, ...props }) {
+    const inputRef = useRef(null);
+
+    return (
+        <InputMask mask={mask} value={value} onChange={onChange}>
+            {(inputProps) => (
+                <TextField
+                    {...inputProps}
+                    {...props}
+                    inputRef={(ref) => {
+                        inputRef.current = ref; // Atualiza a referência local
+                        if (inputProps.ref) {
+                            inputProps.ref(ref); // Atualiza a referência do InputMask
+                        }
+                    }}
+                />
+            )}
+        </InputMask>
+    );
+}
+
 const RetailerSection = () => {
-
     const [height, setHeight] = useState(initialHeight);
+
+    // State único para todos os campos de texto
+    const [formValues, setFormValues] = useState({
+        name: '',
+        identity: '',
+        cnpj: '',
+        phone: '',
+        city: ''
+    });
+
+    const [error, setError] = useState(false);
 
     const theme = useTheme(); // Para usar os breakpoints
     const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Verifica se a tela é menor que 'md'
 
     const classes = useStyles(); // Usando o hook de estilos
 
+
+    useEffect(() => {
+        console.log(formValues)
+    }, [formValues]);
+    // Função onChange para atualizar os valores do formulário
+    const handleInputChange = (event) => {
+        const { name, value } = event.target;
+        setFormValues({
+            ...formValues,
+            [name]: value
+        });
+    };
+
     const onClickRegister = () => {
         if (height === initialHeight) {
             if (isMobile) {
-                setHeight("720px")
+                setHeight("720px");
             } else {
                 setHeight("500px");
             }
         } else {
             setHeight(initialHeight);
         }
+    };
+
+    const onClickSend = () => {
+        if (!formValues.name || !formValues.identity || !formValues.cnpj || !formValues.city) {
+            setError(true);
+            return
+        }
+
+        const data = formValues;
+
+        // Formatar a mensagem
+        const message = `
+Olá, sou lojista e estou entrando em contato através do site!   
+
+*Nome*
+${data.name}
+        
+*Razão Social*
+${data.identity}
+        
+*CNPJ*
+${data.cnpj}
+
+*Contato*
+${data.phone}
+        
+*Cidade*
+${data.city}
+`.trim();
+
+        // Codificar a mensagem para URL
+        const encodedMessage = encodeURIComponent(message);
+
+        // Construir a URL do WhatsApp
+        const url = `${LocalConfig.whatsappURL}?text=${encodedMessage}`;
+
+        window.open(url, '_blank');
     }
 
     return (
@@ -50,7 +135,17 @@ const RetailerSection = () => {
                                                                 <Typography className={classes.label}>Nome</Typography>
                                                             </Grid>
                                                             <Grid size={12}>
-                                                                <TextField fullWidth placeholder={"João da Silva"} id="outlined-basic" size='small' variant="outlined" className={classes.textField} />
+                                                                <TextField
+                                                                    error={error}
+                                                                    fullWidth
+                                                                    placeholder={"João da Silva"}
+                                                                    name="name"
+                                                                    value={formValues.nome}
+                                                                    onChange={handleInputChange}
+                                                                    size='small'
+                                                                    variant="outlined"
+                                                                    className={classes.textField}
+                                                                />
                                                             </Grid>
                                                         </Grid>
                                                     </Box>
@@ -62,7 +157,17 @@ const RetailerSection = () => {
                                                                 <Typography className={classes.label}>Razão social</Typography>
                                                             </Grid>
                                                             <Grid size={12}>
-                                                                <TextField fullWidth id="outlined-basic" size='small' variant="outlined" className={classes.textField} />
+                                                                <TextField
+                                                                    error={error}
+
+                                                                    fullWidth
+                                                                    name="identity"
+                                                                    value={formValues.razaoSocial}
+                                                                    onChange={handleInputChange}
+                                                                    size='small'
+                                                                    variant="outlined"
+                                                                    className={classes.textField}
+                                                                />
                                                             </Grid>
                                                         </Grid>
                                                     </Box>
@@ -74,7 +179,17 @@ const RetailerSection = () => {
                                                                 <Typography className={classes.label}>CNPJ</Typography>
                                                             </Grid>
                                                             <Grid size={12}>
-                                                                <TextField fullWidth placeholder={"XX.XXX.XXX/0001-XX"} id="outlined-basic" size='small' variant="outlined" className={classes.textField} />
+                                                                <MaskedTextField
+                                                                    mask="99.999.999/9999-99"
+                                                                    fullWidth 
+                                                                    name='cnpj'
+                                                                    value={formValues.cnpj}
+                                                                    onChange={handleInputChange}
+                                                                    placeholder={"XX.XXX.XXX/0001-XX"}
+                                                                    size='small'
+                                                                    variant="outlined"
+                                                                    className={classes.textField}
+                                                                />
                                                             </Grid>
                                                         </Grid>
                                                     </Box>
@@ -86,7 +201,17 @@ const RetailerSection = () => {
                                                                 <Typography className={classes.label}>Contato</Typography>
                                                             </Grid>
                                                             <Grid size={12}>
-                                                                <TextField fullWidth placeholder={"(99) 9999-9999"} id="outlined-basic" size='small' variant="outlined" className={classes.textField} />
+                                                            <MaskedTextField
+                                                                    mask="(99) 9999-9999"
+                                                                    fullWidth 
+                                                                    name='phone'
+                                                                    value={formValues.phone}
+                                                                    onChange={handleInputChange}
+                                                                    placeholder={"(99) 9999-9999"}
+                                                                    size='small'
+                                                                    variant="outlined"
+                                                                    className={classes.textField}
+                                                                />
                                                             </Grid>
                                                         </Grid>
                                                     </Box>
@@ -98,13 +223,24 @@ const RetailerSection = () => {
                                                                 <Typography className={classes.label}>Cidade</Typography>
                                                             </Grid>
                                                             <Grid size={12}>
-                                                                <TextField fullWidth placeholder={"Caxias do Sul"} id="outlined-basic" size='small' variant="outlined" className={classes.textField} />
+                                                                <TextField
+                                                                    error={error}
+
+                                                                    fullWidth
+                                                                    placeholder={"Caxias do Sul"}
+                                                                    name="city"
+                                                                    value={formValues.cidade}
+                                                                    onChange={handleInputChange}
+                                                                    size='small'
+                                                                    variant="outlined"
+                                                                    className={classes.textField}
+                                                                />
                                                             </Grid>
                                                         </Grid>
                                                     </Box>
                                                 </Grid>
                                                 <Grid size={{ xs: 12, md: 4 }} alignContent={'end'} >
-                                                    <Button variant='contained' className={classes.formButton}>Entre em contato</Button>
+                                                    <Button variant='contained' onClick={onClickSend} className={classes.formButton}>Entre em contato</Button>
                                                 </Grid>
                                             </Grid>
                                         </Box>

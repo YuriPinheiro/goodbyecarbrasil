@@ -10,7 +10,7 @@ import { ReactComponent as PhoneIcon } from "../assets/PhoneIcon.svg";
 import LocalConfig from '../LocalConfig';
 import ScrollNavigationBar from './ScrollNavigator';
 
-const phoneNumber = "(54) 98447-9160";
+const phoneNumber = "(54) 98170-2266";
 
 // Formatar o número de telefone removendo caracteres não numéricos
 const formattedPhoneNumber = phoneNumber.replace(/\D/g, '');

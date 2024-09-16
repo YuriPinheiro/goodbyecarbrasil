@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
         color: 'white', // Ajuste conforme necessário
         padding: theme.spacing(3, 22),
         [theme.breakpoints.down('md')]: {
-            padding: theme.spacing(35, 2),
+            padding: theme.spacing(30, 2),
         },
     },
     formCard: {

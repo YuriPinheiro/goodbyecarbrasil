@@ -8,7 +8,8 @@ const steps = [
     { title: "Agendamento", subtitle: "Preencha o formulario e agende a vistoria;" },
     { title: "Avaliação", subtitle: "Nosso consultor avaliará seu veículo juntamente com você;" },
     { title: "Anúncio", subtitle: "Seu anúncio será feito em nossa rede de parceiros;" },
-    { title: "Proposta", subtitle: "Receba a melhor oferta sem custo;" }
+    { title: "Proposta", subtitle: "Receba a melhor oferta sem custo;" },
+    { title: "Finalização", subtitle: "Cuidamos da documentação e pagamento no ato;" }
 ]
 
 const StepsSection = () => {
@@ -54,7 +55,7 @@ const StepsSection = () => {
                 <Grid size={12} data-aos="zoom-in">
                     <Box sx={{ flexGrow: 1 }}>
 
-                        <Grid container className={classes.stepsContainer} justifyContent={"center"} spacing={6} >
+                        <Grid container className={classes.stepsContainer} justifyContent={"flex-start"} spacing={6} >
                             {
                                 steps.map((step, i) => {
 
