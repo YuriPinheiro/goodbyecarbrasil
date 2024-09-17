@@ -74,7 +74,7 @@ Contato: ${data.contact}
                                         <Grid size={10}>
                                             <Typography className={classes.contactItem}>
                                                 <a href={`tel:5554981702266`} style={{ color: 'inherit', textDecoration: 'none' }}>
-                                                    (54) 8170-2266
+                                                    (54) 98170-2266
                                                 </a>
                                             </Typography>
                                         </Grid>

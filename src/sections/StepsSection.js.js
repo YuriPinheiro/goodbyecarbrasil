@@ -55,7 +55,7 @@ const StepsSection = () => {
                 <Grid size={12} data-aos="zoom-in">
                     <Box sx={{ flexGrow: 1 }}>
 
-                        <Grid container className={classes.stepsContainer} justifyContent={"flex-start"} spacing={6} >
+                        <Grid container className={classes.stepsContainer} justifyContent={"center"} spacing={6} >
                             {
                                 steps.map((step, i) => {
 

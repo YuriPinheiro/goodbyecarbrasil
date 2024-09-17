@@ -113,7 +113,7 @@ ${data.year}
                                                     <Typography className={classes.label}>Nome</Typography>
                                                 </Grid>
                                                 <Grid size={12}>
-                                                    <TextField fullWidth error={error} name='name' onChange={onChangeForm} placeholder={"João da Silva"} id="outlined-basic" size='small' variant="outlined" className={classes.textField} />
+                                                    <TextField fullWidth error={error} name='name' onChange={onChangeForm} id="outlined-basic" size='small' variant="outlined" className={classes.textField} />
                                                 </Grid>
                                             </Grid>
                                         </Box>
@@ -129,7 +129,6 @@ ${data.year}
                                                         mask="(99) 99999-9999"
                                                         fullWidth name='phone'
                                                         onChange={onChangeForm}
-                                                        placeholder={"(99) 99999-9999"}
                                                         id="outlined-basic"
                                                         size='small'
                                                         variant="outlined"
