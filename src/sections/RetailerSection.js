@@ -135,7 +135,6 @@ ${data.city}
                                                                 <TextField
                                                                     error={error}
                                                                     fullWidth
-                                                                    placeholder={"João da Silva"}
                                                                     name="name"
                                                                     value={formValues.nome}
                                                                     onChange={handleInputChange}
@@ -204,7 +203,6 @@ ${data.city}
                                                                     name='phone'
                                                                     value={formValues.phone}
                                                                     onChange={handleInputChange}
-                                                                    placeholder={"(99) 9999-9999"}
                                                                     size='small'
                                                                     variant="outlined"
                                                                     className={classes.textField}

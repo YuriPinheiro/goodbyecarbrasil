@@ -138,7 +138,7 @@ Contato: ${data.contact}
                                                         <Typography className={classes.label}>Nome</Typography>
                                                     </Grid>
                                                     <Grid size={12}>
-                                                        <TextField fullWidth name='name' error={error} onChange={onChange} placeholder={"João da Silva"} id="outlined-basic" size='small' variant="outlined" className={classes.textField} />
+                                                        <TextField fullWidth name='name' error={error} onChange={onChange} id="outlined-basic" size='small' variant="outlined" className={classes.textField} />
                                                     </Grid>
                                                 </Grid>
                                             </Box>
