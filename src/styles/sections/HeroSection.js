@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
         margin: 0, 
         padding: 0, 
         [theme.breakpoints.down('md')]: {
-            height: "125vh"
+            height: "auto"
         }
     },
     overlay: {
@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
         color: 'white', 
         padding: theme.spacing(3, 22),
         [theme.breakpoints.down('md')]: {
-            padding: theme.spacing(30, 2),
+            padding: theme.spacing(30, 2, 2, 2),
         },
     },
     formCard: {
