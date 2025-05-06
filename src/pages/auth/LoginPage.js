@@ -48,7 +48,7 @@ const LoginPage = () => {
             try {
                 setGoogleLoading(true);
                 const result = await getRedirectResult(auth);
-                
+                console.log("Result:", result)
                 if (result) {
                     const user = result.user;
 
@@ -76,7 +76,6 @@ const LoginPage = () => {
                 }
             } catch (error) {
                 console.error("Erro no login com Google:", error);
-                console.log(error)
                 setError("Erro ao fazer login com Google. Tente novamente.");
             } finally {
                 setGoogleLoading(false);
