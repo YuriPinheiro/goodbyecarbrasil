@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
     Box, 
     Button, 
@@ -18,7 +18,8 @@ import { Visibility, VisibilityOff, Email, Lock } from "@mui/icons-material";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { 
     signInWithEmailAndPassword, 
-    signInWithPopup, 
+    signInWithRedirect,
+    getRedirectResult,
     GoogleAuthProvider,
     AuthErrorCodes 
 } from "firebase/auth";
@@ -35,10 +36,55 @@ const LoginPage = () => {
     const [passwordError, setPasswordError] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [googleLoading, setGoogleLoading] = useState(false);
 
     const classes = useStyles();
     const theme = useTheme();
     const navigate = useNavigate();
+
+    // // Verifica o resultado do redirect quando a página carrega
+    // useEffect(() => {
+    //     const checkRedirectResult = async () => {
+    //         try {
+    //             setGoogleLoading(true);
+    //             const result = await getRedirectResult(auth);
+                
+    //             if (result) {
+    //                 const user = result.user;
+
+    //                 // Verifica se o usuário já existe no Firestore
+    //                 const userRef = doc(db, "users", user.uid);
+    //                 const userSnap = await getDoc(userRef);
+
+    //                 if (!userSnap.exists()) {
+    //                     await setDoc(userRef, {
+    //                         name: user.displayName,
+    //                         email: user.email,
+    //                         phone: user.phoneNumber || "",
+    //                         createdAt: serverTimestamp(),
+    //                         isGoogleAccount: true,
+    //                         lastLogin: serverTimestamp()
+    //                     });
+    //                 } else {
+    //                     // Atualiza último login
+    //                     await setDoc(userRef, {
+    //                         lastLogin: serverTimestamp()
+    //                     }, { merge: true });
+    //                 }
+
+    //                 navigate("/dashboard");
+    //             }
+    //         } catch (error) {
+    //             console.error("Erro no login com Google:", error);
+    //             console.log(error)
+    //             setError("Erro ao fazer login com Google. Tente novamente.");
+    //         } finally {
+    //             setGoogleLoading(false);
+    //         }
+    //     };
+
+    //     checkRedirectResult();
+    // }, [navigate]);
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -65,7 +111,7 @@ const LoginPage = () => {
                     setEmailError("Email inválido");
                     break;
                 case AuthErrorCodes.USER_DELETED:
-                    setEmailError("Usuário não encontrado!");
+                    setEmailError("Usuário não encontrado");
                     break;
                 case AuthErrorCodes.INVALID_PASSWORD:
                     setPasswordError("Senha incorreta");
@@ -114,41 +160,14 @@ const LoginPage = () => {
     };
 
     const handleGoogleLogin = async () => {
-        setLoading(true);
         setError(null);
-        
         const provider = new GoogleAuthProvider();
-
+        
         try {
-            const result = await signInWithPopup(auth, provider);
-            const user = result.user;
-
-            // Verifica se o usuário já existe no Firestore
-            const userRef = doc(db, "users", user.uid);
-            const userSnap = await getDoc(userRef);
-
-            if (!userSnap.exists()) {
-                await setDoc(userRef, {
-                    name: user.displayName,
-                    email: user.email,
-                    phone: user.phoneNumber || "",
-                    createdAt: serverTimestamp(),
-                    isGoogleAccount: true,
-                    lastLogin: serverTimestamp()
-                });
-            } else {
-                // Atualiza último login
-                await setDoc(userRef, {
-                    lastLogin: serverTimestamp()
-                }, { merge: true });
-            }
-
-            navigate("/dashboard");
+            await signInWithRedirect(auth, provider);
         } catch (error) {
-            console.error("Erro no login com Google:", error);
-            setError("Erro ao fazer login com Google. Tente novamente.");
-        } finally {
-            setLoading(false);
+            console.error("Erro ao iniciar login com Google:", error);
+            setError("Erro ao iniciar login com Google. Tente novamente.");
         }
     };
 
@@ -264,7 +283,7 @@ const LoginPage = () => {
                                 fullWidth
                                 variant="outlined"
                                 className={classes.googleButton}
-                                disabled={loading}
+                                disabled={googleLoading}
                                 startIcon={
                                     <img 
                                         src="/google-icon.svg" 
@@ -275,7 +294,7 @@ const LoginPage = () => {
                                     />
                                 }
                             >
-                                Entrar com Google
+                                {googleLoading ? <CircularProgress size={24} color="inherit" /> : "Entrar com Google"}
                             </Button>
 
                             <Divider sx={{ my: 2 }}>
