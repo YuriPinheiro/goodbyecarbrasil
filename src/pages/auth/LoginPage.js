@@ -65,7 +65,7 @@ const LoginPage = () => {
                     setEmailError("Email inválido");
                     break;
                 case AuthErrorCodes.USER_DELETED:
-                    setEmailError("Usuário não encontrado");
+                    setEmailError("Usuário não encontrado!");
                     break;
                 case AuthErrorCodes.INVALID_PASSWORD:
                     setPasswordError("Senha incorreta");
