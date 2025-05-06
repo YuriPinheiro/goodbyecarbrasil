@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { getRedirectResult, onAuthStateChanged, signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../stores/FirebaseStore";
 
 const AuthContext = createContext();
@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    getResult();
+
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser || null);
       setLoading(false);
@@ -26,12 +26,6 @@ export const AuthProvider = ({ children }) => {
 
     return () => unsubscribe();
   }, []);
-
-  const getResult = async () => {
-    
-     const result = await getRedirectResult(auth);
-     console.log(result)
-  }
 
   return (
     <AuthContext.Provider value={{ user, loading, logout }}>

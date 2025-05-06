@@ -42,49 +42,49 @@ const LoginPage = () => {
     const theme = useTheme();
     const navigate = useNavigate();
 
-    // // Verifica o resultado do redirect quando a página carrega
-    // useEffect(() => {
-    //     const checkRedirectResult = async () => {
-    //         try {
-    //             setGoogleLoading(true);
-    //             const result = await getRedirectResult(auth);
+    // Verifica o resultado do redirect quando a página carrega
+    useEffect(() => {
+        const checkRedirectResult = async () => {
+            try {
+                setGoogleLoading(true);
+                const result = await getRedirectResult(auth);
                 
-    //             if (result) {
-    //                 const user = result.user;
+                if (result) {
+                    const user = result.user;
 
-    //                 // Verifica se o usuário já existe no Firestore
-    //                 const userRef = doc(db, "users", user.uid);
-    //                 const userSnap = await getDoc(userRef);
+                    // Verifica se o usuário já existe no Firestore
+                    const userRef = doc(db, "users", user.uid);
+                    const userSnap = await getDoc(userRef);
 
-    //                 if (!userSnap.exists()) {
-    //                     await setDoc(userRef, {
-    //                         name: user.displayName,
-    //                         email: user.email,
-    //                         phone: user.phoneNumber || "",
-    //                         createdAt: serverTimestamp(),
-    //                         isGoogleAccount: true,
-    //                         lastLogin: serverTimestamp()
-    //                     });
-    //                 } else {
-    //                     // Atualiza último login
-    //                     await setDoc(userRef, {
-    //                         lastLogin: serverTimestamp()
-    //                     }, { merge: true });
-    //                 }
+                    if (!userSnap.exists()) {
+                        await setDoc(userRef, {
+                            name: user.displayName,
+                            email: user.email,
+                            phone: user.phoneNumber || "",
+                            createdAt: serverTimestamp(),
+                            isGoogleAccount: true,
+                            lastLogin: serverTimestamp()
+                        });
+                    } else {
+                        // Atualiza último login
+                        await setDoc(userRef, {
+                            lastLogin: serverTimestamp()
+                        }, { merge: true });
+                    }
 
-    //                 navigate("/dashboard");
-    //             }
-    //         } catch (error) {
-    //             console.error("Erro no login com Google:", error);
-    //             console.log(error)
-    //             setError("Erro ao fazer login com Google. Tente novamente.");
-    //         } finally {
-    //             setGoogleLoading(false);
-    //         }
-    //     };
+                    navigate("/dashboard");
+                }
+            } catch (error) {
+                console.error("Erro no login com Google:", error);
+                console.log(error)
+                setError("Erro ao fazer login com Google. Tente novamente.");
+            } finally {
+                setGoogleLoading(false);
+            }
+        };
 
-    //     checkRedirectResult();
-    // }, [navigate]);
+        checkRedirectResult();
+    }, [navigate]);
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
