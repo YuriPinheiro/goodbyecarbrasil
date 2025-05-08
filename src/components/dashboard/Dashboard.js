@@ -27,6 +27,7 @@ import useStyles from "../../styles/dashboard/dashboard"
 import { useMenu } from "../../contexts/MenuContext";
 import { deleteVehicle, getVehiclesByUser } from "../../stores/VeihcleService";
 import userService from "../../stores/UserService";
+import AdminVehiclesPage from "./AdminVehiclesPage";
 
 const Dashboard = () => {
   const theme = useTheme()
@@ -144,7 +145,7 @@ const Dashboard = () => {
       case 'Dashboard':
         return (
           <>
-            Teste
+            <AdminVehiclesPage />
           </>
         ); // Componente para o conteúdo do Dashboard
       case 'Meus Veículos':

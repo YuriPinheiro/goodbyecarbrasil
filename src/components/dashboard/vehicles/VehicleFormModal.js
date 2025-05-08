@@ -14,6 +14,9 @@ import {
   Autocomplete,
   CircularProgress,
   Alert,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { Close as CloseIcon, CloudUpload as CloudUploadIcon } from "@mui/icons-material";
@@ -27,11 +30,41 @@ const photoTypes = [
   { id: "trunk", label: "Porta-malas", description: "Foto do porta-malas do veículo" },
 ];
 
+// Opções de itens do veículo
+const vehicleItems = [
+  { id: "air_conditioning", label: "Ar condicionado" },
+  { id: "spare_key", label: "Chave reserva" },
+  { id: "electric_windows", label: "Vidros elétricos" },
+  { id: "hydraulic_steering", label: "Direção hidráulica" },
+  { id: "airbag", label: "Airbag" },
+  { id: "abs_brakes", label: "Freios ABS" },
+  { id: "multimedia_center", label: "Central multimídia" },
+  { id: "reverse_sensor", label: "Sensor de ré" },
+  { id: "reverse_camera", label: "Câmera de ré" },
+  { id: "alarm", label: "Alarme" },
+  { id: "immobilizer", label: "Imobilizador" },
+  { id: "electric_mirrors", label: "Espelhos elétricos" },
+];
+
+// Opções para tempo de posse
+const ownershipTimeOptions = [
+  { value: "less_than_6_months", label: "Menos de 6 meses" },
+  { value: "6_to_12_months", label: "6 meses a 1 ano" },
+  { value: "1_to_3_years", label: "1 a 3 anos" },
+  { value: "3_to_5_years", label: "3 a 5 anos" },
+  { value: "more_than_5_years", label: "Mais de 5 anos" },
+];
+
 const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, onFeedback }) => {
   const theme = useTheme();
   const [brand, setBrand] = useState("");
   const [model, setModel] = useState("");
   const [year, setYear] = useState("");
+  const [plate, setPlate] = useState("");
+  const [description, setDescription] = useState("");
+  const [mileage, setMileage] = useState("");
+  const [ownershipTime, setOwnershipTime] = useState("");
+  const [selectedItems, setSelectedItems] = useState([]);
   const [photoFiles, setPhotoFiles] = useState({});
   const fileInputsRef = useRef({});
   const [photos, setPhotos] = useState({
@@ -46,15 +79,13 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
-
   const [brandsLoading, setBrandsLoading] = useState(false);
   const [modelsLoading, setModelsLoading] = useState(false);
   const [availableBrands, setAvailableBrands] = useState([]);
 
-
   // Years for dropdown
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 30 }, (_, i) => (currentYear - i).toString());
+  const years = Array.from({ length: 20 }, (_, i) => (currentYear - i).toString());
 
   useEffect(() => {
     const loadBrands = async () => {
@@ -73,10 +104,8 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
     };
 
     loadBrands();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+  }, [open, availableBrands.length]);
 
-  // Atualiza os modelos disponíveis quando a marca muda
   useEffect(() => {
     const loadModels = async () => {
       if (brand) {
@@ -103,6 +132,11 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
       setBrand(vehicle.brand || "");
       setModel(vehicle.model || "");
       setYear(vehicle.year || "");
+      setPlate(vehicle.plate || "");
+      setDescription(vehicle.description || "");
+      setMileage(vehicle.mileage || "");
+      setOwnershipTime(vehicle.ownershipTime || "");
+      setSelectedItems(vehicle.items || []);
       setPhotos(vehicle.photos || {
         front: "",
         side: "",
@@ -117,20 +151,27 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
 
   useEffect(() => {
     if (!open) {
-      // Libera todas as URLs temporárias
       Object.values(photoFiles).forEach(fileData => {
         if (fileData?.previewUrl) {
           URL.revokeObjectURL(fileData.previewUrl);
         }
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+  }, [open, photoFiles]);
+
+  useEffect(() => {
+   console.log(selectedItems)
+  }, [selectedItems]);
 
   const resetForm = () => {
     setBrand("");
     setModel("");
     setYear("");
+    setPlate("");
+    setDescription("");
+    setMileage("");
+    setOwnershipTime("");
+    setSelectedItems([]);
     setPhotos({
       front: "",
       side: "",
@@ -150,6 +191,9 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
     if (!brand) newErrors.brand = "Marca é obrigatória";
     if (!model) newErrors.model = "Modelo é obrigatório";
     if (!year) newErrors.year = "Ano é obrigatório";
+    if (!plate) newErrors.plate = "Placa é obrigatória";
+    if (!mileage) newErrors.mileage = "Quilometragem é obrigatória";
+    if (!ownershipTime) newErrors.ownershipTime = "Tempo de posse é obrigatório";
 
     // Validate all photos
     photoTypes.forEach(type => {
@@ -169,12 +213,16 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
     setErrorMessage("");
 
     try {
-      //Cria/atualiza o veículo para obter o ID
       const vehicleData = {
         brand,
         model,
         year: parseInt(year),
-        photos: photos // Inicialmente vazio, será preenchido com as URLs
+        plate: plate.toUpperCase(),
+        description,
+        mileage: parseInt(mileage),
+        ownershipTime,
+        items: selectedItems,
+        photos: photos
       };
 
       let vehicleId;
@@ -186,7 +234,7 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
         vehicleId = newVehicle.id;
       }
 
-      //Faz upload das fotos (se houver arquivos)
+      // Upload photos if there are files
       const updatedPhotos = { ...photos };
       let hasPhotosToUpload = false;
 
@@ -199,17 +247,16 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
         }
       }
 
-      //Atualiza o veículo com as URLs das fotos (se necessário)
       if (hasPhotosToUpload) {
         await updateVehicle(vehicleId, { photos: updatedPhotos });
       }
 
-      onFeedback({text: "Veículo atualizado com sucesso!", severity: "success"})
+      onFeedback({ text: "Veículo salvo com sucesso!", severity: "success" });
       onSave();
       resetForm();
       onClose();
     } catch (error) {
-      onFeedback({text: "Houve um erro ao salvar o veículo!", severity: "error"})
+      onFeedback({ text: "Houve um erro ao salvar o veículo!", severity: "error" });
       console.error("Error saving vehicle:", error);
       setErrorMessage("Erro ao salvar veículo. Por favor, tente novamente.");
     } finally {
@@ -217,27 +264,22 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
     }
   };
 
-
   const handleFileChange = (type, event) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Cria uma URL temporária para pré-visualização
     const previewUrl = URL.createObjectURL(file);
 
-    // Armazena o arquivo e a pré-visualização
     setPhotoFiles(prev => ({
       ...prev,
       [type]: { file, previewUrl }
     }));
 
-    // Atualiza a pré-visualização nas fotos
     setPhotos(prev => ({
       ...prev,
       [type]: previewUrl
     }));
 
-    // Limpa erros
     if (errors[`photo_${type}`]) {
       setErrors(prev => {
         const newErrors = { ...prev };
@@ -249,6 +291,14 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
 
   const handleFileUpload = (type, event) => {
     handleFileChange(type, event);
+  };
+
+  const handleItemToggle = (itemId) => {
+    setSelectedItems(prev =>
+      prev.includes(itemId)
+        ? prev.filter(id => id !== itemId)
+        : [...prev, itemId]
+    );
   };
 
   return (
@@ -391,6 +441,173 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
                 />
               )}
             />
+          </Grid>
+
+          {/* Novos campos adicionados */}
+          <Grid size={{ xs: 12, md: 4 }}>
+            <TextField
+              fullWidth
+              label="Placa"
+              value={plate}
+              onChange={(e) => {
+                const value = e.target.value.toUpperCase();
+                setPlate(value.replace(/[^A-Z0-9]/g, '').substring(0, 7));
+                if (value && errors.plate) {
+                  setErrors(prev => {
+                    const newErrors = { ...prev };
+                    delete newErrors.plate;
+                    return newErrors;
+                  });
+                }
+              }}
+              required
+              error={!!errors.plate}
+              helperText={errors.plate}
+              inputProps={{
+                maxLength: 7,
+              }}
+            />
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 4 }}>
+            <TextField
+              fullWidth
+              label="Quilometragem"
+              value={mileage}
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, '');
+                setMileage(value);
+                if (value && errors.mileage) {
+                  setErrors(prev => {
+                    const newErrors = { ...prev };
+                    delete newErrors.mileage;
+                    return newErrors;
+                  });
+                }
+              }}
+              required
+              error={!!errors.mileage}
+              helperText={errors.mileage}
+              InputProps={{
+                endAdornment: <Typography variant="body2">km</Typography>,
+              }}
+            />
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Autocomplete
+              value={ownershipTime}
+              onChange={(_, newValue) => {
+                setOwnershipTime(newValue || "");
+                if (newValue && errors.ownershipTime) {
+                  setErrors(prev => {
+                    const newErrors = { ...prev };
+                    delete newErrors.ownershipTime;
+                    return newErrors;
+                  });
+                }
+              }}
+              options={ownershipTimeOptions.map(opt => opt.value)}
+              getOptionLabel={(option) =>
+                ownershipTimeOptions.find(opt => opt.value === option)?.label || ""
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Tempo de posse"
+                  required
+                  error={!!errors.ownershipTime}
+                  helperText={errors.ownershipTime}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid size={{ xs: 12 }}>
+            <TextField
+              fullWidth
+              label="Descrição do veículo"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              multiline
+              rows={4}
+              placeholder="Descreva o estado geral do veículo, histórico de manutenção, etc."
+            />
+          </Grid>
+
+          {/* Seção de itens do veículo */}
+          <Grid xs={12}>
+            <Box
+              sx={{
+                p: 3,
+                mt: 2,
+                mb: 3,
+                backgroundColor: 'background.default',
+                borderRadius: 2,
+                boxShadow: 1,
+                border: '1px solid',
+                borderColor: 'divider',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  boxShadow: 3,
+                }
+              }}
+            >
+              <Typography
+                variant="subtitle1"
+                fontWeight="bold"
+                gutterBottom
+                sx={{ color: 'text.primary' }}
+              >
+                Itens do Veículo
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.primary"
+                paragraph
+                sx={{ mb: 2 }}
+              >
+                Marque os itens que seu veículo possui:
+              </Typography>
+
+              <FormGroup row sx={{ gap: 2 }}>
+                {vehicleItems.map((item) => (
+                  <FormControlLabel
+                    key={item.id}
+                    control={
+                      <Checkbox
+                        checked={selectedItems.includes(item.id)}
+                        onChange={() => handleItemToggle(item.id)}
+                        name={item.id}
+                        sx={{
+                          '& .MuiSvgIcon-root': {
+                            fontSize: 28,
+                          }
+                        }}
+                      />
+                    }
+                    label={
+                      <Typography variant="body2" sx={{
+                        color: selectedItems.includes(item.id) ? 'primary.main' : 'text.primary',
+                        fontWeight: selectedItems.includes(item.id) ? 500 : 400
+                      }}>
+                        {item.label}
+                      </Typography>
+                    }
+                    sx={{
+                      m: 0,
+                      px: 2,
+                      py: 1,
+                      borderRadius: 1,
+                      bgcolor: selectedItems.includes(item.id) ? 'rgba(24, 232, 219, 0.08)' : 'transparent',
+                      '&:hover': {
+                        bgcolor: 'action.hover',
+                      }
+                    }}
+                  />
+                ))}
+              </FormGroup>
+            </Box>
           </Grid>
 
           <Grid size={{ xs: 12 }}>

@@ -108,6 +108,22 @@ export const addVehicle = async (userId, vehicleData) => {
   }
 };
 
+// Obter todos os veículos
+export const getAllVehicles = async () => {
+  try {
+    const vehiclesRef = collection(db, "vehicles");
+    const querySnapshot = await getDocs(vehiclesRef);
+
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error("Error getting all vehicles: ", error);
+    throw error;
+  }
+};
+
 // Obter todos os veículos de um usuário
 export const getVehiclesByUser = async (userId) => {
   try {

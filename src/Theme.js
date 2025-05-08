@@ -71,6 +71,19 @@ const theme = createTheme({
           },
         },
       },
+    },
+    MuiCheckbox: {
+      styleOverrides: {
+        root: {
+          color: "#000000", // Cor preta quando desmarcado
+          '&.Mui-checked': {
+            color: "#18E8DB", // Cor primária quando marcado
+          },
+          '&:hover': {
+            backgroundColor: 'rgba(24, 232, 219, 0.08)', // Efeito hover sutil
+          },
+        },
+      },
     }
   },
   typography: {

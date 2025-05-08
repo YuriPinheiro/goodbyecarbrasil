@@ -271,7 +271,7 @@ const LoginPage = () => {
                                 fullWidth 
                                 variant="contained" 
                                 className={classes.button}
-                                disabled={loading}
+                                disabled={loading || googleLoading}
                                 aria-busy={loading}
                             >
                                 {loading ? <CircularProgress size={24} color="inherit" /> : "Entrar"}

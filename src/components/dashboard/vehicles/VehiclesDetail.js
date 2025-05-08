@@ -9,10 +9,10 @@ import {
   useTheme,
   IconButton,
   Divider,
+  Chip,
 } from "@mui/material"
 import Grid from "@mui/material/Grid2";
 import { Close as CloseIcon, Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material"
-
 
 const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete }) => {
   const theme = useTheme()
@@ -20,7 +20,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete }) => {
   if (!vehicle) return null
 
   // Format date
-  const date = vehicle.createdAt.toDate(); // Converte para objeto Date do JavaScript
+  const date = vehicle.createdAt.toDate();
   const formattedDate = date.toLocaleDateString('pt-BR');
 
   const photoTypes = [
@@ -30,6 +30,15 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete }) => {
     { id: "interior", label: "Interior" },
     { id: "trunk", label: "Porta-malas" },
   ]
+
+  // Opções para tempo de posse
+  const ownershipTimeMap = {
+    "less_than_6_months": "Menos de 6 meses",
+    "6_to_12_months": "6 meses a 1 ano",
+    "1_to_3_years": "1 a 3 anos",
+    "3_to_5_years": "3 a 5 anos",
+    "more_than_5_years": "Mais de 5 anos"
+  }
 
   return (
     <Dialog
@@ -92,6 +101,36 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete }) => {
               </Box>
               <Box>
                 <Typography variant="subtitle2" color="text.primary">
+                  Placa
+                </Typography>
+                <Typography variant="body1" fontWeight="medium">
+                  {vehicle.plate}
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+
+          <Grid size={{ xs: 12 }}>
+            <Divider sx={{ my: 1 }} />
+            <Box sx={{ display: "flex", gap: 4, mb: 2 }}>
+              <Box>
+                <Typography variant="subtitle2" color="text.primary">
+                  Quilometragem
+                </Typography>
+                <Typography variant="body1" fontWeight="medium">
+                  {vehicle.mileage} km
+                </Typography>
+              </Box>
+              <Box>
+                <Typography variant="subtitle2" color="text.primary">
+                  Tempo de posse
+                </Typography>
+                <Typography variant="body1" fontWeight="medium">
+                  {ownershipTimeMap[vehicle.ownershipTime] || vehicle.ownershipTime}
+                </Typography>
+              </Box>
+              <Box>
+                <Typography variant="subtitle2" color="text.primary">
                   Adicionado em
                 </Typography>
                 <Typography variant="body1" fontWeight="medium">
@@ -101,16 +140,54 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete }) => {
             </Box>
           </Grid>
 
+          {vehicle.description && (
+            <Grid size={{ xs: 12 }}>
+              <Divider sx={{ my: 1 }} />
+              <Box>
+                <Typography variant="subtitle2" color="text.primary" gutterBottom>
+                  Descrição
+                </Typography>
+                <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
+                  {vehicle.description}
+                </Typography>
+              </Box>
+            </Grid>
+          )}
+
+          {vehicle.items?.length > 0 && (
+            <Grid size={{ xs: 12 }}>
+              <Divider sx={{ my: 1 }} />
+              <Box>
+                <Typography variant="subtitle2" color="text.primary" gutterBottom>
+                  Itens do veículo
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {vehicle.items.map(item => (
+                    <Chip 
+                      key={item} 
+                      label={item} 
+                      size="small"
+                      sx={{ 
+                        backgroundColor: theme.palette.primary.light,
+                        color: theme.palette.getContrastText(theme.palette.primary.light)
+                      }} 
+                    />
+                  ))}
+                </Box>
+              </Box>
+            </Grid>
+          )}
+
           <Grid size={{ xs: 12 }}>
-            <Divider sx={{ my: 1 }} />
-            <Typography variant="title" fontWeight="bold" gutterBottom sx={{ mt: 2 }}>
+            <Divider sx={{ my: 2 }} />
+            <Typography variant="title" fontWeight="bold" gutterBottom>
               Fotos do Veículo
             </Typography>
           </Grid>
 
           {/* Main photo - larger */}
           <Grid size={{ xs: 12 }}>
-            <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ mt: 2 }}>
+            <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
               Frente
             </Typography>
             <Box
@@ -119,8 +196,8 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete }) => {
               alt={`${vehicle?.brand?.nome} ${vehicle.model} - Frente`}
               sx={{
                 width: "100%",
-
-                objectFit: "cover",
+                maxHeight: 400,
+                objectFit: "contain",
                 borderRadius: 1,
               }}
             />
@@ -189,4 +266,4 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete }) => {
   )
 }
 
-export default VehicleDetailsModal
+export default VehicleDetailsModal;

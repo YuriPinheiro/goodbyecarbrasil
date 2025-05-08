@@ -1,6 +1,8 @@
 import {
     doc,
     getDoc,
+    getDocs,
+    collection,
     updateDoc,
     serverTimestamp
 } from "firebase/firestore";
@@ -30,6 +32,28 @@ const userService = {
         } catch (error) {
             console.error("Erro ao buscar usuário:", error);
             throw new Error("Não foi possível obter os dados do usuário");
+        }
+    },
+
+    async getAllUsers() {
+        try {
+    
+            // Obter todos os usuários
+            const usersCollection = collection(db, "users");
+            const usersSnapshot = await getDocs(usersCollection);
+            
+            const users = [];
+            usersSnapshot.forEach(doc => {
+                users.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            });
+            
+            return users;
+        } catch (error) {
+            console.error("Erro ao buscar usuários:", error);
+            throw new Error("Não foi possível obter a lista de usuários: " + error.message);
         }
     },
 
