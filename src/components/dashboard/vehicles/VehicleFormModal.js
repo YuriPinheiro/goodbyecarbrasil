@@ -22,14 +22,29 @@ import {
 import Grid from "@mui/material/Grid2";
 import { Close as CloseIcon, CloudUpload as CloudUploadIcon, CameraAlt as CameraAltIcon } from "@mui/icons-material";
 import { uploadVehiclePhoto, addVehicle, updateVehicle, fetchCarBrands, fetchCarModels } from "../../../stores/VeihcleService";
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import DialogContentText from '@mui/material/DialogContentText';
+
 
 const photoTypes = [
-  { id: "front", label: "Frente", description: "Foto frontal do veículo" },
-  { id: "side", label: "Lateral", description: "Foto lateral do veículo" },
-  { id: "back", label: "Traseira", description: "Foto traseira do veículo" },
-  { id: "interior", label: "Interior", description: "Foto do interior do veículo" },
-  { id: "trunk", label: "Porta-malas", description: "Foto do porta-malas do veículo" },
+  { id: "front", label: "Frente", description: "Foto diretamente da frente do veículo" },
+  { id: "side", label: "Lateral", description: "Foto lateral do veículo (use também as diagonais)" },
+  { id: "back", label: "Traseira", description: "Foto diretamente da traseira do veículo" },
+  { id: "trunk", label: "Porta-malas", description: "Foto do porta-malas aberto" },
+  { id: "interior", label: "Painel", description: "Foto do painel e bancos dianteiros" },
+  { id: "engine", label: "Motor", description: "Foto do compartimento do motor com o capô aberto" },
+  { id: "diagonalFrontLeft", label: "Diagonal frontal - lado 1", description: "Foto diagonal frontal do lado do motorista" },
+  { id: "diagonalFrontRight", label: "Diagonal frontal - lado 2", description: "Foto diagonal frontal do lado do passageiro" },
+  { id: "diagonalRearLeft", label: "Diagonal traseira - lado 1", description: "Foto diagonal traseira do lado do motorista" },
+  { id: "diagonalRearRight", label: "Diagonal traseira - lado 2", description: "Foto diagonal traseira do lado do passageiro" },
+  { id: "backSeat", label: "Banco traseiro", description: "Foto dos bancos traseiros do veículo" },
+  { id: "lights", label: "Lanterna/Farol", description: "Foto dos faróis ou lanternas traseiras" },
+  { id: "wheelFrontLeft", label: "Pneu dianteiro esquerdo", description: "Foto da roda/pneu dianteiro esquerdo" },
+  { id: "wheelFrontRight", label: "Pneu dianteiro direito", description: "Foto da roda/pneu dianteiro direito" },
+  { id: "wheelRearLeft", label: "Pneu traseiro esquerdo", description: "Foto da roda/pneu traseiro esquerdo" },
+  { id: "wheelRearRight", label: "Pneu traseiro direito", description: "Foto da roda/pneu traseiro direito" }
 ];
+
 
 // Opções de itens do veículo
 const vehicleItems = [
@@ -70,6 +85,7 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
   const [selectedItems, setSelectedItems] = useState([]);
   const [photoFiles, setPhotoFiles] = useState({});
   const fileInputsRef = useRef({});
+
   const [photos, setPhotos] = useState({
     front: "",
     side: "",
@@ -77,6 +93,8 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
     interior: "",
     trunk: "",
   });
+  const [helpModal, setHelpModal] = useState(false);
+
   const [errors, setErrors] = useState({});
   const [availableModels, setAvailableModels] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -208,6 +226,7 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
 
   const captureFromCamera = (type) => {
     const input = document.createElement('input');
@@ -647,13 +666,28 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
             </Box>
           </Grid>
 
-          <Grid size={{ xs: 12 }}>
-            <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-              Fotos do Veículo
-            </Typography>
-            <Typography variant="body2" color="text.primary" paragraph>
-              Adicione as 5 fotos obrigatórias do seu veículo. Todas as fotos são necessárias para prosseguir.
-            </Typography>
+          <Grid size={12}>
+            <Grid spacing={1}>
+              <Grid size={12}>
+                <Grid container alignItems="start" wrap="nowrap">
+                  <Grid>
+                    <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                      Fotos do Veículo
+                    </Typography>
+                  </Grid>
+                  <Grid>
+                    <IconButton onClick={() => setHelpModal(true)} size="small">
+                      <HelpOutlineIcon fontSize="small" />
+                    </IconButton>
+                  </Grid> 
+                </Grid>
+              </Grid>
+              <Grid size={{xs:12}}>
+                <Typography variant="body2" color="text.primary">
+                  Adicione as {photoTypes.length} fotos obrigatórias do seu veículo. Todas as fotos são necessárias para prosseguir.
+                </Typography>
+              </Grid>
+            </Grid>
           </Grid>
 
           {photoTypes.map(type => (
@@ -672,6 +706,7 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
                   position: "relative",
                 }}
               >
+
                 {photos[type.id] ? (
                   <>
                     <Box
@@ -847,8 +882,57 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
         >
           {loading ? <CircularProgress size={24} color="inherit" /> : isEditing ? "Atualizar" : "Adicionar"}
         </Button>
+
       </DialogActions>
-    </Dialog>
+
+      {/* Modal de ajuda com exemplos */}
+      <Dialog
+        open={helpModal}
+        onClose={() => setHelpModal(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Como tirar as fotos do veículo</DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ mb: 2 }}>
+            Confira abaixo o exemplo de como cada foto deve ser tirada:
+          </DialogContentText>
+
+          <Box
+            component="img"
+            src="/images/exemplos-fotos-veiculo.jpg" // Substitua pelo caminho da sua imagem
+            alt="Exemplo de fotos do veículo"
+            sx={{
+              width: '100%',
+              borderRadius: 2,
+              border: '1px solid',
+              borderColor: 'divider'
+            }}
+          />
+
+          <DialogContentText sx={{ mt: 2 }}>
+            <Typography variant="body2" component="div">
+              <strong>Dicas importantes:</strong>
+              <ul>
+                <li>Mantenha o veículo centralizado em todas as fotos</li>
+                <li>Evite sombras fortes sobre o veículo</li>
+                <li>Certifique-se de que todas as partes estão visíveis</li>
+                <li>Use fundo neutro quando possível</li>
+              </ul>
+            </Typography>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setHelpModal(false)}
+            variant="contained"
+          >
+            Entendi
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+    </Dialog >
   );
 };
 
