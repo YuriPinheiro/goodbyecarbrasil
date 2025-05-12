@@ -23,13 +23,39 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete }) => {
   const date = vehicle.createdAt.toDate();
   const formattedDate = date.toLocaleDateString('pt-BR');
 
-  const photoTypes = [
-    { id: "front", label: "Frente" },
-    { id: "side", label: "Lateral" },
-    { id: "back", label: "Traseira" },
-    { id: "interior", label: "Interior" },
-    { id: "trunk", label: "Porta-malas" },
-  ]
+const photoTypes = [
+  { id: "front", label: "Frente", description: "Foto diretamente da frente do veículo" },
+  { id: "side", label: "Lateral", description: "Foto lateral do veículo (use também as diagonais)" },
+  { id: "back", label: "Traseira", description: "Foto diretamente da traseira do veículo" },
+  { id: "trunk", label: "Porta-malas", description: "Foto do porta-malas aberto" },
+  { id: "interior", label: "Painel", description: "Foto do painel e bancos dianteiros" },
+  { id: "engine", label: "Motor", description: "Foto do compartimento do motor com o capô aberto" },
+  { id: "diagonalFrontLeft", label: "Diagonal frontal - lado 1", description: "Foto diagonal frontal do lado do motorista" },
+  { id: "diagonalFrontRight", label: "Diagonal frontal - lado 2", description: "Foto diagonal frontal do lado do passageiro" },
+  { id: "diagonalRearLeft", label: "Diagonal traseira - lado 1", description: "Foto diagonal traseira do lado do motorista" },
+  { id: "diagonalRearRight", label: "Diagonal traseira - lado 2", description: "Foto diagonal traseira do lado do passageiro" },
+  { id: "backSeat", label: "Banco traseiro", description: "Foto dos bancos traseiros do veículo" },
+  { id: "lights", label: "Lanterna/Farol", description: "Foto dos faróis ou lanternas traseiras" },
+  { id: "wheelFrontLeft", label: "Pneu dianteiro esquerdo", description: "Foto da roda/pneu dianteiro esquerdo" },
+  { id: "wheelFrontRight", label: "Pneu dianteiro direito", description: "Foto da roda/pneu dianteiro direito" },
+  { id: "wheelRearLeft", label: "Pneu traseiro esquerdo", description: "Foto da roda/pneu traseiro esquerdo" },
+  { id: "wheelRearRight", label: "Pneu traseiro direito", description: "Foto da roda/pneu traseiro direito" }
+];
+
+const vehicleItems = {
+  air_conditioning: { label: "Ar condicionado" },
+  spare_key: { label: "Chave reserva" },
+  electric_windows: { label: "Vidros elétricos" },
+  hydraulic_steering: { label: "Direção hidráulica" },
+  airbag: { label: "Airbag" },
+  abs_brakes: { label: "Freios ABS" },
+  multimedia_center: { label: "Central multimídia" },
+  reverse_sensor: { label: "Sensor de ré" },
+  reverse_camera: { label: "Câmera de ré" },
+  alarm: { label: "Alarme" },
+  immobilizer: { label: "Imobilizador" },
+  electric_mirrors: { label: "Espelhos elétricos" }
+};
 
   // Opções para tempo de posse
   const ownershipTimeMap = {
@@ -165,7 +191,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete }) => {
                   {vehicle.items.map(item => (
                     <Chip 
                       key={item} 
-                      label={item} 
+                      label={vehicleItems[item].label} 
                       size="small"
                       sx={{ 
                         backgroundColor: theme.palette.primary.light,

@@ -531,8 +531,20 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
               label="Quilometragem"
               value={mileage}
               onChange={(e) => {
-                const value = e.target.value.replace(/\D/g, '');
-                setMileage(value);
+                // Remove tudo que não é dígito
+                let value = e.target.value.replace(/\D/g, '');
+
+                // Limita a 6 dígitos (999.999 km)
+                value = value.slice(0, 6);
+
+                // Formata com separador de milhar
+                const formattedValue = value.length > 0
+                  ? Number(value).toLocaleString('pt-BR')
+                  : '';
+
+                setMileage(formattedValue);
+
+                // Limpa erro se existir
                 if (value && errors.mileage) {
                   setErrors(prev => {
                     const newErrors = { ...prev };
@@ -543,9 +555,13 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
               }}
               required
               error={!!errors.mileage}
-              helperText={errors.mileage}
+              helperText={errors.mileage || "Máximo 999.999 km"}
               InputProps={{
                 endAdornment: <Typography variant="body2">km</Typography>,
+                inputProps: {
+                  inputMode: 'numeric',
+                  pattern: '[0-9]*',
+                }
               }}
             />
           </Grid>
@@ -679,10 +695,10 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
                     <IconButton onClick={() => setHelpModal(true)} size="small">
                       <HelpOutlineIcon fontSize="small" />
                     </IconButton>
-                  </Grid> 
+                  </Grid>
                 </Grid>
               </Grid>
-              <Grid size={{xs:12}}>
+              <Grid size={{ xs: 12 }}>
                 <Typography variant="body2" color="text.primary">
                   Adicione as {photoTypes.length} fotos obrigatórias do seu veículo. Todas as fotos são necessárias para prosseguir.
                 </Typography>
