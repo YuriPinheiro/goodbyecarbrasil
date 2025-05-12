@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme) => ({
 
         // Estilo para telas menores que 1024px
         [theme.breakpoints.down('md')]: {
-            height: '220px',
+            height: '280px',
         },
     },
     container: {

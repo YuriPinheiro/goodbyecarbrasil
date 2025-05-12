@@ -81,6 +81,13 @@ const AdvantageSection = () => {
                                     subtitle={"Consultoria especializada para garantir a melhor oferta."}
                                 />
                             </Box>
+                            <Divider sx={{ my: 2, borderColor: 'grey.700' }} />
+                            <Box sx={{ flexGrow: 1 }} data-aos={"fade-left"}>
+                                <AdvantageItem
+                                    title={"APLICATIVO PRÓPRIO"}
+                                    subtitle={"Aplicativo onde você pode cadastrar seu veículo de forma rápida e segura."}
+                                />
+                            </Box>
                         </Grid>
                     </Grid>
                 </Box>

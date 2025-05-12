@@ -11,6 +11,7 @@ import LocalConfig from '../LocalConfig';
 import InputMask from 'react-input-mask';
 
 import moment from 'moment';
+import { useNavigate } from 'react-router-dom';
 
 function MaskedTextField({ mask, value, onChange, ...props }) {
     const inputRef = useRef(null);
@@ -22,7 +23,7 @@ function MaskedTextField({ mask, value, onChange, ...props }) {
                     {...inputProps}
                     {...props}
                     inputRef={(ref) => {
-                        inputRef.current = ref; 
+                        inputRef.current = ref;
                         if (inputProps.ref) {
                             inputProps.ref(ref);
                         }
@@ -40,12 +41,17 @@ const HeroSection = () => {
 
     const classes = useStyles();
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         console.log(form);
         setError(false);
     }, [form]);
 
 
+    const onClickRegister = () => {
+        navigate("/login");
+    }
     const onClickSend = () => {
         if (!form.name || !form.brand || !form.model || !form.year) {
             setError(true);
@@ -72,7 +78,7 @@ ${data.year}
 
         const encodedMessage = encodeURIComponent(message);
 
-       
+
         const url = `${LocalConfig.whatsappURL}?text=${encodedMessage}`;
 
         window.open(url, '_blank');
@@ -189,7 +195,7 @@ ${data.year}
                                                                         }
                                                                     },
                                                                     textField: {
-                                                                        size: 'small', 
+                                                                        size: 'small',
                                                                         placeholder: 'Escolha um ano',
                                                                     },
                                                                 }}
@@ -203,8 +209,16 @@ ${data.year}
 
                                     <Grid size={12}>
                                         <Box sx={{ flexGrow: 1 }}>
-                                            <Grid container justifyContent={'center'}>
-                                                <Button onClick={onClickSend} className={classes.button} variant='contained'>Entre em contato</Button>
+                                            <Grid container justifyContent={'center'} alignItems={'center'} sx={{textAlign: 'center'}}>
+                                                <Grid size={12}>
+                                                    <Button onClick={onClickSend} className={classes.button} variant='contained'>Entre em contato</Button>
+                                                </Grid>
+                                                <Grid size={12}>
+                                                    <Typography>ou</Typography>
+                                                </Grid>
+                                                <Grid size={12}>
+                                                    <Button onClick={onClickRegister} className={classes.button} variant='contained'>Cadastre-se agora</Button>
+                                                </Grid>
                                             </Grid>
                                         </Box>
                                     </Grid>

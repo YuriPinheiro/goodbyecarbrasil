@@ -9,6 +9,7 @@ import {
   Box,
   Typography,
   useTheme,
+  useMediaQuery,
   IconButton,
   FormHelperText,
   Autocomplete,
@@ -19,7 +20,7 @@ import {
   FormGroup,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { Close as CloseIcon, CloudUpload as CloudUploadIcon } from "@mui/icons-material";
+import { Close as CloseIcon, CloudUpload as CloudUploadIcon, CameraAlt as CameraAltIcon } from "@mui/icons-material";
 import { uploadVehiclePhoto, addVehicle, updateVehicle, fetchCarBrands, fetchCarModels } from "../../../stores/VeihcleService";
 
 const photoTypes = [
@@ -57,6 +58,8 @@ const ownershipTimeOptions = [
 
 const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, onFeedback }) => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const [brand, setBrand] = useState("");
   const [model, setModel] = useState("");
   const [year, setYear] = useState("");
@@ -160,7 +163,7 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
   }, [open, photoFiles]);
 
   useEffect(() => {
-   console.log(selectedItems)
+    console.log(selectedItems)
   }, [selectedItems]);
 
   const resetForm = () => {
@@ -204,6 +207,40 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const captureFromCamera = (type) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.capture = 'environment'; // Usa a câmera traseira
+
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const previewUrl = URL.createObjectURL(file);
+
+      setPhotoFiles(prev => ({
+        ...prev,
+        [type]: { file, previewUrl }
+      }));
+
+      setPhotos(prev => ({
+        ...prev,
+        [type]: previewUrl
+      }));
+
+      if (errors[`photo_${type}`]) {
+        setErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors[`photo_${type}`];
+          return newErrors;
+        });
+      }
+    };
+
+    input.click();
   };
 
   const handleSave = async () => {
@@ -649,45 +686,56 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
                         mb: 1,
                       }}
                     />
-                    <Button
-                      size="small"
-                      component="label"
-                      sx={{
-                        color: theme.palette.primary.main,
-                      }}
-                    >
-                      Alterar foto
-                      <input
-                        type="file"
-                        hidden
-                        accept="image/*"
-                        onChange={(e) => handleFileUpload(type.id, e)}
-                        ref={el => fileInputsRef.current[type.id] = el}
-                      />
-                    </Button>
-                    <Button
-                      size="small"
-                      color="error"
-                      onClick={() => {
-                        // Limpa a foto selecionada
-                        setPhotos(prev => ({ ...prev, [type.id]: "" }));
-                        setPhotoFiles(prev => {
-                          const newFiles = { ...prev };
-                          if (newFiles[type.id]?.previewUrl) {
-                            URL.revokeObjectURL(newFiles[type.id].previewUrl);
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Button
+                        size="small"
+                        component="label"
+                        sx={{
+                          color: theme.palette.primary.main,
+                        }}
+                      >
+                        Alterar
+                        <input
+                          type="file"
+                          hidden
+                          accept="image/*"
+                          onChange={(e) => handleFileUpload(type.id, e)}
+                          ref={el => fileInputsRef.current[type.id] = el}
+                        />
+                      </Button>
+                      {isMobile && (
+                        <Button
+                          size="small"
+                          onClick={() => captureFromCamera(type.id)}
+                          sx={{
+                            color: theme.palette.primary.main,
+                          }}
+                          startIcon={<CameraAltIcon fontSize="small" />}
+                        >
+                          Tirar foto
+                        </Button>
+                      )}
+                      <Button
+                        size="small"
+                        color="error"
+                        onClick={() => {
+                          setPhotos(prev => ({ ...prev, [type.id]: "" }));
+                          setPhotoFiles(prev => {
+                            const newFiles = { ...prev };
+                            if (newFiles[type.id]?.previewUrl) {
+                              URL.revokeObjectURL(newFiles[type.id].previewUrl);
+                            }
+                            delete newFiles[type.id];
+                            return newFiles;
+                          });
+                          if (fileInputsRef.current[type.id]) {
+                            fileInputsRef.current[type.id].value = "";
                           }
-                          delete newFiles[type.id];
-                          return newFiles;
-                        });
-                        // Reseta o input de arquivo
-                        if (fileInputsRef.current[type.id]) {
-                          fileInputsRef.current[type.id].value = "";
-                        }
-                      }}
-                      sx={{ mt: 1 }}
-                    >
-                      Remover
-                    </Button>
+                        }}
+                      >
+                        Remover
+                      </Button>
+                    </Box>
                   </>
                 ) : (
                   <>
@@ -717,27 +765,47 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
                         <Typography variant="body2" color="text.primary" align="center" sx={{ mb: 2 }}>
                           {type.description}
                         </Typography>
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          component="label"
-                          sx={{
-                            borderColor: theme.palette.primary.main,
-                            color: theme.palette.primary.main,
-                            "&:hover": {
-                              borderColor: "#15d5c9",
-                              bgcolor: "rgba(24, 232, 219, 0.04)",
-                            },
-                          }}
-                        >
-                          Selecionar arquivo
-                          <input
-                            type="file"
-                            hidden
-                            accept="image/*"
-                            onChange={(e) => handleFileUpload(type.id, e)}
-                          />
-                        </Button>
+                        <Box sx={{ display: 'flex', gap: 2 }}>
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            component="label"
+                            sx={{
+                              borderColor: theme.palette.primary.main,
+                              color: theme.palette.primary.main,
+                              "&:hover": {
+                                borderColor: "#15d5c9",
+                                bgcolor: "rgba(24, 232, 219, 0.04)",
+                              },
+                            }}
+                          >
+                            Selecionar
+                            <input
+                              type="file"
+                              hidden
+                              accept="image/*"
+                              onChange={(e) => handleFileUpload(type.id, e)}
+                            />
+                          </Button>
+                          {isMobile && (
+                            <Button
+                              variant="outlined"
+                              size="small"
+                              onClick={() => captureFromCamera(type.id)}
+                              sx={{
+                                borderColor: theme.palette.primary.main,
+                                color: theme.palette.primary.main,
+                                "&:hover": {
+                                  borderColor: "#15d5c9",
+                                  bgcolor: "rgba(24, 232, 219, 0.04)",
+                                },
+                              }}
+                              startIcon={<CameraAltIcon fontSize="small" />}
+                            >
+                              Tirar foto
+                            </Button>
+                          )}
+                        </Box>
                       </>
                     )}
                     {errors[`photo_${type.id}`] && (
@@ -750,6 +818,7 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
               </Box>
             </Grid>
           ))}
+
         </Grid>
       </DialogContent>
       <DialogActions sx={{ px: 3, py: 2, bgcolor: theme.palette.background.default }}>

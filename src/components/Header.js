@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBar, Divider, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { AppBar, Button, Divider, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 import Grid from "@mui/material/Grid2";
 import useStyles from '../styles/components/Header';
 import LogoText from "../assets/LogoTexto.jpg";
@@ -9,6 +9,7 @@ import { ReactComponent as WhatsappIcon } from "../assets/WhatsappIcon.svg";
 import { ReactComponent as PhoneIcon } from "../assets/PhoneIcon.svg";
 import LocalConfig from '../LocalConfig';
 import ScrollNavigationBar from './ScrollNavigator';
+import { useNavigate } from 'react-router-dom';
 
 const phoneNumber = "(54) 98170-2266";
 
@@ -19,6 +20,11 @@ const Header = () => {
 
     const theme = useTheme(); 
     const isMobile = useMediaQuery(theme.breakpoints.down('sm')); 
+    const navigate = useNavigate();
+
+    const onClickRedirect = () => {
+        navigate("/login")
+    }
 
     const onClickSocial = (social) => {
         if (social === 'linkedin') {
@@ -81,6 +87,7 @@ const Header = () => {
                                         </Grid>
                                     </Grid>
                                 </Grid>
+
                                 {!isMobile && <Divider orientation="vertical" sx={{ background: "white" }} variant="middle" flexItem />}
 
                                 <Grid item xs>
@@ -96,6 +103,10 @@ const Header = () => {
                                             </Typography>
                                         </Grid>
                                     </Grid>
+                                </Grid>
+
+                                <Grid item xs sx={{marginLeft: isMobile ? "0px" : "30px"}}>
+                                    <Button onClick={onClickRedirect} sx={{maxWidth: "120px"}} variant='outlined'> Entrar </Button>
                                 </Grid>
                             </Grid>
 
