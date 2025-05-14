@@ -22,6 +22,8 @@ import {
     TextField,
     InputAdornment,
     CircularProgress,
+    useMediaQuery,
+    Menu,
 } from "@mui/material"
 import Grid from "@mui/material/Grid2"
 import {
@@ -31,20 +33,27 @@ import {
     FilterList as FilterListIcon,
     Search as SearchIcon,
     Clear as ClearIcon,
+    MoreVert as MoreVertIcon,
 } from "@mui/icons-material"
 import VehicleFormModal from "./vehicles/VehicleFormModal"
 import VehicleDetailsModal from "./vehicles/VehiclesDetail"
 import DeleteConfirmationModal from "./vehicles/DeleteModal"
 import { getAllVehicles } from "../../stores/VeihcleService"
 import userService from "../../stores/UserService"
+import ProfileModal from "../ProfileModal"
 
 const AdminVehiclesPage = () => {
     const theme = useTheme()
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
     const [loading, setLoading] = useState(true)
     const [vehicles, setVehicles] = useState([])
     const [filteredVehicles, setFilteredVehicles] = useState([])
-    const [users, setUsers] = useState([]);
+    const [users, setUsers] = useState([])
+    const [anchorEl, setAnchorEl] = useState(null)
+    const [currentVehicle, setCurrentVehicle] = useState(null)
+    const [profileOpen, setProfileOpen] = useState(false);
+    const [profileUser, setProfileUser] = useState(null);
 
     // Modal states
     const [formModalOpen, setFormModalOpen] = useState(false)
@@ -64,7 +73,6 @@ const AdminVehiclesPage = () => {
     const [availableBrands, setAvailableBrands] = useState([])
     const [availableModels, setAvailableModels] = useState([])
     const [allModels, setAllModels] = useState({})
-
 
     // Opções de ordenação
     const sortOptions = [
@@ -201,7 +209,7 @@ const AdminVehiclesPage = () => {
         try {
             const usersData = await userService.getAllUsers();
             setUsers(usersData);
-
+            console.log(usersData)
         } catch (error) {
             console.error("Erro ao buscar usuarios:", error)
         }
@@ -314,6 +322,35 @@ const AdminVehiclesPage = () => {
         setSortBy("createdAt_desc")
     }
 
+    const handleMenuOpen = (event, vehicle) => {
+        setAnchorEl(event.currentTarget)
+        setCurrentVehicle(vehicle)
+    }
+
+    const handleMenuClose = () => {
+        setAnchorEl(null)
+        setCurrentVehicle(null)
+    }
+
+    const handleMenuAction = (action) => {
+        handleMenuClose()
+        if (!currentVehicle) return
+
+        switch (action) {
+            case 'view':
+                handleViewVehicle(currentVehicle)
+                break
+            case 'edit':
+                handleEditVehicle(currentVehicle)
+                break
+            case 'delete':
+                handleDeleteVehicle(currentVehicle)
+                break
+            default:
+                break
+        }
+    }
+
     // Formatar data para exibição
     const formatDate = (dateString) => {
         const date = dateString.toDate(); // Converte para objeto Date do JavaScript
@@ -323,7 +360,7 @@ const AdminVehiclesPage = () => {
     }
 
     return (
-        <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f5f5f5" }}>
+        <Box sx={{ display: "flex", minHeight: "100vh" }}>
 
             {/* Main content */}
             <Box
@@ -502,33 +539,39 @@ const AdminVehiclesPage = () => {
                             <Table stickyHeader aria-label="tabela de veículos">
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell sx={{ fontWeight: "bold" }}>Foto</TableCell>
+                                        {!isMobile && <TableCell sx={{ fontWeight: "bold" }}>Foto</TableCell>}
                                         <TableCell sx={{ fontWeight: "bold" }}>Marca</TableCell>
                                         <TableCell sx={{ fontWeight: "bold" }}>Modelo</TableCell>
                                         <TableCell sx={{ fontWeight: "bold" }}>Ano</TableCell>
-                                        <TableCell sx={{ fontWeight: "bold" }}>Data de Cadastro</TableCell>
-                                        <TableCell sx={{ fontWeight: "bold" }}>Proprietário</TableCell>
+                                        {!isMobile && (
+                                            <>
+                                                <TableCell sx={{ fontWeight: "bold" }}>Data de Cadastro</TableCell>
+                                                <TableCell sx={{ fontWeight: "bold" }}>Proprietário</TableCell>
+                                            </>
+                                        )}
                                         <TableCell sx={{ fontWeight: "bold" }}>Ações</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody sx={{ bgcolor: theme.palette.background.default }}>
                                     {filteredVehicles.length === 0 ? (
                                         <TableRow>
-                                            <TableCell colSpan={6} align="center" sx={{ py: 3 }}>
+                                            <TableCell colSpan={isMobile ? 4 : 7} align="center" sx={{ py: 3 }}>
                                                 <Typography variant="body1">Nenhum veículo encontrado</Typography>
                                             </TableCell>
                                         </TableRow>
                                     ) : (
                                         filteredVehicles.map((vehicle) => (
                                             <TableRow key={vehicle.id} hover>
-                                                <TableCell>
-                                                    <Box
-                                                        component="img"
-                                                        src={vehicle.photos?.front || '/placeholder-car.jpg'}
-                                                        alt={`${vehicle.brand.nome} ${vehicle.model}`}
-                                                        sx={{ width: 80, height: 50, objectFit: "cover", borderRadius: 1 }}
-                                                    />
-                                                </TableCell>
+                                                {!isMobile && (
+                                                    <TableCell>
+                                                        <Box
+                                                            component="img"
+                                                            src={vehicle.photos?.front || '/placeholder-car.jpg'}
+                                                            alt={`${vehicle.brand.nome} ${vehicle.model}`}
+                                                            sx={{ width: 80, height: 50, objectFit: "cover", borderRadius: 1 }}
+                                                        />
+                                                    </TableCell>
+                                                )}
                                                 <TableCell>{vehicle.brand.nome}</TableCell>
                                                 <TableCell>{vehicle.model}</TableCell>
                                                 <TableCell>
@@ -542,30 +585,73 @@ const AdminVehiclesPage = () => {
                                                         }}
                                                     />
                                                 </TableCell>
-                                                <TableCell>{formatDate(vehicle.createdAt)}</TableCell>
-                                                <TableCell>{vehicle?.user?.name}</TableCell>
+                                                {!isMobile && (
+                                                    <>
+                                                        <TableCell>{formatDate(vehicle.createdAt)}</TableCell>
+                                                        <TableCell>
+
+                                                            <Button
+                                                            sx={{color: theme.palette.text.primary}}
+                                                                onClick={() => { setProfileUser(vehicle?.user); setProfileOpen(true); }}
+                                                            >
+                                                              
+                                                                    {vehicle?.user?.name || 'N/A'}
+                                                            </Button>
+
+                                                        </TableCell>
+                                                    </>
+                                                )}
                                                 <TableCell>
-                                                    <IconButton
-                                                        size="small"
-                                                        onClick={() => handleViewVehicle(vehicle)}
-                                                        sx={{ color: theme.palette.primary.main }}
-                                                    >
-                                                        <VisibilityIcon />
-                                                    </IconButton>
-                                                    <IconButton
-                                                        size="small"
-                                                        onClick={() => handleEditVehicle(vehicle)}
-                                                        sx={{ color: theme.palette.primary.main }}
-                                                    >
-                                                        <EditIcon />
-                                                    </IconButton>
-                                                    <IconButton
-                                                        size="small"
-                                                        onClick={() => handleDeleteVehicle(vehicle)}
-                                                        sx={{ color: theme.palette.error.main }}
-                                                    >
-                                                        <DeleteIcon />
-                                                    </IconButton>
+                                                    {isMobile ? (
+                                                        <>
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={(e) => handleMenuOpen(e, vehicle)}
+                                                                sx={{ color: theme.palette.primary.main }}
+                                                            >
+                                                                <MoreVertIcon />
+                                                            </IconButton>
+                                                            <Menu
+                                                                anchorEl={anchorEl}
+                                                                open={Boolean(anchorEl) && currentVehicle?.id === vehicle.id}
+                                                                onClose={handleMenuClose}
+                                                            >
+                                                                <MenuItem onClick={() => handleMenuAction('view')}>
+                                                                    <VisibilityIcon sx={{ mr: 1 }} /> Visualizar
+                                                                </MenuItem>
+                                                                <MenuItem onClick={() => handleMenuAction('edit')}>
+                                                                    <EditIcon sx={{ mr: 1 }} /> Editar
+                                                                </MenuItem>
+                                                                <MenuItem onClick={() => handleMenuAction('delete')}>
+                                                                    <DeleteIcon sx={{ mr: 1 }} /> Excluir
+                                                                </MenuItem>
+                                                            </Menu>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => handleViewVehicle(vehicle)}
+                                                                sx={{ color: theme.palette.primary.main }}
+                                                            >
+                                                                <VisibilityIcon />
+                                                            </IconButton>
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => handleEditVehicle(vehicle)}
+                                                                sx={{ color: theme.palette.primary.main }}
+                                                            >
+                                                                <EditIcon />
+                                                            </IconButton>
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => handleDeleteVehicle(vehicle)}
+                                                                sx={{ color: theme.palette.error.main }}
+                                                            >
+                                                                <DeleteIcon />
+                                                            </IconButton>
+                                                        </>
+                                                    )}
                                                 </TableCell>
                                             </TableRow>
                                         ))
@@ -608,6 +694,9 @@ const AdminVehiclesPage = () => {
                     selectedVehicle ? `${selectedVehicle.brand.nome} ${selectedVehicle.model} (${selectedVehicle.year})` : ""
                 }
             />
+
+            <ProfileModal open={profileOpen} onClose={() => { setProfileOpen(false); setProfileUser(null); }} userProvider={{ ...profileUser, uid: profileUser?.id }} mode={'view'} />
+
         </Box>
     )
 }

@@ -42,7 +42,10 @@ const photoTypes = [
   { id: "wheelFrontLeft", label: "Pneu dianteiro esquerdo", description: "Foto da roda/pneu dianteiro esquerdo" },
   { id: "wheelFrontRight", label: "Pneu dianteiro direito", description: "Foto da roda/pneu dianteiro direito" },
   { id: "wheelRearLeft", label: "Pneu traseiro esquerdo", description: "Foto da roda/pneu traseiro esquerdo" },
-  { id: "wheelRearRight", label: "Pneu traseiro direito", description: "Foto da roda/pneu traseiro direito" }
+  { id: "wheelRearRight", label: "Pneu traseiro direito", description: "Foto da roda/pneu traseiro direito" },
+  { id: "damage1", label: "Avarias - Foto 1 (Opcional)", description: "Foto de avarias ou danos no veículo" },
+  { id: "damage2", label: "Avarias - Foto 2 (Opcional)", description: "Foto de avarias ou danos no veículo" },
+  { id: "damage3", label: "Avarias - Foto 3 (Opcional)", description: "Foto de avarias ou danos no veículo" }
 ];
 
 
@@ -52,15 +55,38 @@ const vehicleItems = [
   { id: "spare_key", label: "Chave reserva" },
   { id: "electric_windows", label: "Vidros elétricos" },
   { id: "hydraulic_steering", label: "Direção hidráulica" },
-  { id: "airbag", label: "Airbag" },
-  { id: "abs_brakes", label: "Freios ABS" },
-  { id: "multimedia_center", label: "Central multimídia" },
-  { id: "reverse_sensor", label: "Sensor de ré" },
-  { id: "reverse_camera", label: "Câmera de ré" },
+  { id: "electric_steering", label: "Direção elétrica" },
+  { id: "assisted_steering", label: "Direção assistida" },
+  { id: "airbag", label: "Air bag" },
+  { id: "dual_airbag", label: "Air bag duplo" },
   { id: "alarm", label: "Alarme" },
-  { id: "immobilizer", label: "Imobilizador" },
-  { id: "electric_mirrors", label: "Espelhos elétricos" },
+  { id: "heater", label: "Ar quente" },
+  { id: "electric_seats", label: "Bancos elétricos" },
+  { id: "leather_seats", label: "Bancos em couro" },
+  { id: "reverse_camera", label: "Câmera de ré" },
+  { id: "onboard_computer", label: "Computador de bordo" },
+  { id: "traction_control", label: "Controle de tração" },
+  { id: "stability_control", label: "Controle de estabilidade" },
+  { id: "rear_defroster", label: "Desembaçador traseiro" },
+  { id: "fog_lights", label: "Farol neblina" },
+  { id: "abs_brakes", label: "Freios ABS" },
+  { id: "ebd_brakes", label: "Freios EBD" },
+  { id: "interface", label: "Interface" },
+  { id: "rear_wiper", label: "Limpador traseiro" },
+  { id: "tonneau_cover", label: "Lona marítima" },
+  { id: "bed_liner", label: "Protetor de caçamba" },
+  { id: "electric_mirrors", label: "Retrovisores elétricos" },
+  { id: "alloy_wheels", label: "Rodas liga leve" },
+  { id: "parking_sensor", label: "Sensor de estacionamento" },
+  { id: "sunroof", label: "Teto solar" },
+  { id: "electric_locks", label: "Travas elétricas" },
+  { id: "turbo", label: "Turbo" },
+  { id: "green_windows", label: "Vidros verdes" },
+  { id: "height_adjustable_steering", label: "Volante com regulagem de altura" },
+  { id: "multimedia_center", label: "Central multimídia" },
+  { id: "reverse_sensor", label: "Sensor de ré" }
 ];
+
 
 // Opções para tempo de posse
 const ownershipTimeOptions = [
@@ -78,6 +104,7 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
   const [brand, setBrand] = useState("");
   const [model, setModel] = useState("");
   const [year, setYear] = useState("");
+  const [modelYear, setModelYear] = useState(""); //Ano do modelo
   const [plate, setPlate] = useState("");
   const [description, setDescription] = useState("");
   const [mileage, setMileage] = useState("");
@@ -92,6 +119,9 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
     back: "",
     interior: "",
     trunk: "",
+    damage1: "",
+    damage2: "",
+    damage3: ""
   });
   const [helpModal, setHelpModal] = useState(false);
 
@@ -153,6 +183,7 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
       setBrand(vehicle.brand || "");
       setModel(vehicle.model || "");
       setYear(vehicle.year || "");
+      setModelYear(vehicle.modelYear || "");
       setPlate(vehicle.plate || "");
       setDescription(vehicle.description || "");
       setMileage(vehicle.mileage || "");
@@ -164,6 +195,9 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
         back: "",
         interior: "",
         trunk: "",
+        damage1: "",
+        damage2: "",
+        damage3: ""
       });
     } else {
       resetForm();
@@ -188,6 +222,7 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
     setBrand("");
     setModel("");
     setYear("");
+    setModelYear("");
     setPlate("");
     setDescription("");
     setMileage("");
@@ -199,6 +234,9 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
       back: "",
       interior: "",
       trunk: "",
+      damage1: "",
+      damage2: "",
+      damage3: ""
     });
     setErrors({});
     setErrorMessage("");
@@ -212,16 +250,19 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
     if (!brand) newErrors.brand = "Marca é obrigatória";
     if (!model) newErrors.model = "Modelo é obrigatório";
     if (!year) newErrors.year = "Ano é obrigatório";
+    if (!modelYear) newErrors.modelYear = "Ano do modelo é obrigatório";
     if (!plate) newErrors.plate = "Placa é obrigatória";
     if (!mileage) newErrors.mileage = "Quilometragem é obrigatória";
     if (!ownershipTime) newErrors.ownershipTime = "Tempo de posse é obrigatório";
 
     // Validate all photos
-    photoTypes.forEach(type => {
-      if (!photos[type.id]) {
-        newErrors[`photo_${type.id}`] = `Foto ${type.label.toLowerCase()} é obrigatória`;
-      }
-    });
+    photoTypes
+      .filter(type => !type.id.startsWith('damage')) // Filtra apenas as fotos obrigatórias
+      .forEach(type => {
+        if (!photos[type.id]) {
+          newErrors[`photo_${type.id}`] = `Foto ${type.label.toLowerCase()} é obrigatória`;
+        }
+      });
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -273,12 +314,18 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
         brand,
         model,
         year: parseInt(year),
+        modelYear: parseInt(modelYear),
         plate: plate.toUpperCase(),
         description,
         mileage: parseInt(mileage),
         ownershipTime,
         items: selectedItems,
-        photos: photos
+        photos: {
+          ...photos,
+          damage1: photos.damage1 || null,
+          damage2: photos.damage2 || null,
+          damage3: photos.damage3 || null
+        }
       };
 
       let vehicleId;
@@ -490,7 +537,7 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Ano"
+                  label="Ano de Fabricação"
                   required
                   error={!!errors.year}
                   helperText={errors.year}
@@ -498,8 +545,32 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
               )}
             />
           </Grid>
-
-          {/* Novos campos adicionados */}
+          {/* Ano do Modelo */}
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Autocomplete
+              value={modelYear}
+              onChange={(_, newValue) => {
+                setModelYear(newValue || "");
+                if (newValue && errors.modelYear) {
+                  setErrors(prev => {
+                    const newErrors = { ...prev };
+                    delete newErrors.modelYear;
+                    return newErrors;
+                  });
+                }
+              }}
+              options={years}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Ano do Modelo"
+                  required
+                  error={!!errors.modelYear}
+                  helperText={errors.modelYear}
+                />
+              )}
+            />
+          </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
             <TextField
               fullWidth

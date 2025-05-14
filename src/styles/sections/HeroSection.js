@@ -7,7 +7,7 @@ const useStyles = makeStyles((theme) => ({
     container: {
         position: 'relative',
         width: '100%',
-        height: '100vh', 
+        height: '90vh', 
         backgroundImage: `url(${BackgroundImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -49,17 +49,19 @@ const useStyles = makeStyles((theme) => ({
         color: 'white', 
         padding: theme.spacing(3, 20),
         [theme.breakpoints.down('md')]: {
-            padding: theme.spacing(30, 2, 2, 2),
+            padding: theme.spacing(10, 2, 2, 2),
         },
     },
     formCard: {
         backgroundColor: alpha(theme.colors.primary, .8) + "!important",
         margin: "24px",
         borderRadius: "12px!important",
+        marginTop: "100px",
         padding: theme.spacing(1, 2),
         width: "322px",
         [theme.breakpoints.down('md')]: {
             width: "auto",
+             marginTop: "10px",
         },
     },
     button: {

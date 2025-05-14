@@ -16,7 +16,7 @@ import { Close } from '@mui/icons-material';
 import { useTheme } from '@mui/material';
 import userService from '../stores/UserService';
 
-const ProfileModal = ({ open, onClose, userProvider }) => {
+const ProfileModal = ({ open, onClose, userProvider, mode }) => {
     const [user, setUser] = useState({});
     const [phone, setPhone] = React.useState(user?.phoneNumber || '');
     const [displayPhone, setDisplayPhone] = React.useState('');
@@ -80,7 +80,7 @@ const ProfileModal = ({ open, onClose, userProvider }) => {
         <Dialog open={open} PaperProps={{ sx: { backgroundColor: theme.palette.background.default } }} onClose={onClose} maxWidth="xs" fullWidth>
             <DialogTitle>
                 <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <Typography variant="h6">Meu Perfil</Typography>
+                    <Typography variant="h6">Perfil</Typography>
                     <IconButton onClick={onClose} color="inherit">
                         <Close />
                     </IconButton>
@@ -127,6 +127,7 @@ const ProfileModal = ({ open, onClose, userProvider }) => {
                     <TextField
                         label="Telefone"
                         value={displayPhone}
+                        disabled={Boolean(mode==='view')}
                         onChange={handlePhoneChange}
                         fullWidth
                         margin="normal"
