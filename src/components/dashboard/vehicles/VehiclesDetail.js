@@ -147,21 +147,34 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
       }}
     >
       <DialogTitle sx={{ m: 0, p: 2, bgcolor: theme.palette.background.primary }}>
-        <Typography variant="h6" component="div" fontWeight="bold">
-          {vehicle?.brand?.nome} {vehicle.model} ({vehicle.year})
-        </Typography>
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
+        <Grid container justifyContent={'center'}
           sx={{
-            position: "absolute",
-            right: 8,
-            top: 8,
-            color: theme.palette.grey[500],
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          <CloseIcon />
-        </IconButton>
+          <Grid size={{ xs: 11 }}>
+            <Typography variant="h6" component="div" fontWeight="bold">
+              {vehicle?.brand?.nome} {vehicle.model} ({vehicle.year})
+            </Typography>
+          </Grid>
+          <Grid size={{ xs: 1 }}>
+            <IconButton
+              aria-label="close"
+              onClick={onClose}
+              sx={{
+                position: "absolute",
+                right: 8,
+                top: 8,
+                color: theme.palette.text.primary,
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </Grid>
+        </Grid>
+
+
       </DialogTitle>
       <DialogContent dividers sx={{ p: 3, bgcolor: theme.palette.background.default }}>
         <Grid container spacing={3}>
