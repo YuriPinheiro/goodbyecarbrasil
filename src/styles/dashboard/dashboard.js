@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
         height: '100vh',
         position: 'fixed',
         top: 64,
+        zIndex: 999,
         transition: theme.transitions.create('width', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
