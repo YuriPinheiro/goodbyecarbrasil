@@ -676,6 +676,7 @@ const AdminVehiclesPage = () => {
                 open={detailsModalOpen}
                 onClose={() => setDetailsModalOpen(false)}
                 vehicle={selectedVehicle}
+                view
                 onEdit={() => {
                     setDetailsModalOpen(false)
                     handleEditVehicle(selectedVehicle)

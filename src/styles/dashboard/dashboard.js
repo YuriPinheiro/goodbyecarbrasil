@@ -67,6 +67,9 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
         }),
+         [theme.breakpoints.down('md')]: {
+            width: "calc(100% - 68px)"
+        },
     },
     pageHeader: {
         display: 'flex',

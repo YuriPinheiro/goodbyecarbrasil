@@ -22,7 +22,7 @@ import {
 } from "@mui/icons-material"
 import ProfileModal from "../../ProfileModal";
 
-const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete }) => {
+const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view }) => {
 
   const [profileOpen, setProfileOpen] = useState(false);
   const theme = useTheme();
@@ -188,7 +188,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete }) => {
                     </Typography>
                   </Box>
                 </Grid>
-                <Grid size={{ xs: 4, md: 6 }}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Box>
                     <Typography variant="subtitle2" color="text.primary">
                       Ano (Fabricação/Modelo)
@@ -198,7 +198,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete }) => {
                     </Typography>
                   </Box>
                 </Grid>
-                <Grid size={{ xs: 6, md: 4 }}>
+                <Grid size={{ xs: 12, md: 4 }}>
                   <Box>
                     <Typography variant="subtitle2" color="text.primary">
                       Placa
@@ -215,30 +215,42 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete }) => {
           <Grid size={{ xs: 12 }}>
             <Divider sx={{ my: 1 }} />
             <Box sx={{ display: "flex", gap: 4, mb: 2 }}>
-              <Box>
-                <Typography variant="subtitle2" color="text.primary">
-                  Quilometragem
-                </Typography>
-                <Typography variant="body1" fontWeight="medium">
-                  {vehicle.mileage} km
-                </Typography>
-              </Box>
-              <Box>
-                <Typography variant="subtitle2" color="text.primary">
-                  Tempo de posse
-                </Typography>
-                <Typography variant="body1" fontWeight="medium">
-                  {ownershipTimeMap[vehicle.ownershipTime] || vehicle.ownershipTime}
-                </Typography>
-              </Box>
-              <Box>
-                <Typography variant="subtitle2" color="text.primary">
-                  Adicionado em
-                </Typography>
-                <Typography variant="body1" fontWeight="medium">
-                  {formattedDate}
-                </Typography>
-              </Box>
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 6, md: 4 }}>
+                  <Box>
+                    <Typography variant="subtitle2" color="text.primary">
+                      Quilometragem
+                    </Typography>
+                    <Typography variant="body1" fontWeight="medium">
+                      {vehicle.mileage} km
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid size={{ xs: 6, md: 4 }}>
+                  <Box>
+                    <Typography variant="subtitle2" color="text.primary">
+                      Tempo de posse
+                    </Typography>
+                    <Typography variant="body1" fontWeight="medium">
+                      {ownershipTimeMap[vehicle.ownershipTime] || vehicle.ownershipTime}
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Box>
+                    <Typography variant="subtitle2" color="text.primary">
+                      Adicionado em
+                    </Typography>
+                    <Typography variant="body1" fontWeight="medium">
+                      {formattedDate}
+                    </Typography>
+                  </Box>
+                </Grid>
+              </Grid>
+
+
+
+
             </Box>
           </Grid>
 
@@ -361,15 +373,17 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete }) => {
           Excluir
         </Button>
         {/* Novo botão de compartilhar */}
-        <Button
-          startIcon={<ShareIcon />}
-          onClick={handleShare}
-          sx={{
-            color: theme.palette.primary.main,
-          }}
-        >
-          Compartilhar
-        </Button>
+        {view &&
+          <Button
+            startIcon={<ShareIcon />}
+            onClick={handleShare}
+            sx={{
+              color: theme.palette.primary.main,
+            }}
+          >
+            Compartilhar
+          </Button>
+        }
         <Button
           onClick={onClose}
           sx={{
