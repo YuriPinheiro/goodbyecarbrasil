@@ -22,7 +22,7 @@ const HeroSection = () => {
                 <div className={classes.overlay} />
                 <Grid size={{ xs: 12, md: 6 }} className={classes.content}>
                     <Typography variant='h2' className={classes.title}>Venda seu carro sem burocracia.</Typography>
-                    <Typography variant='h5'>Cadastre-se no app e tenha uma proposta em até 24 horas.</Typography>
+                    <Typography variant='h5'>Anuncie no app e tenha uma proposta em até 24 horas.</Typography>
                     
                     {/* Adicione alguns benefícios em bullet points */}
                     <Box sx={{ mt: 3 }}>
@@ -31,9 +31,6 @@ const HeroSection = () => {
                         </Typography>
                         <Typography variant='body1' sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                             <span style={{ marginRight: '8px' }}>✓</span> Proposta rápida em até 24h
-                        </Typography>
-                        <Typography variant='body1' sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                            <span style={{ marginRight: '8px' }}>✓</span> Processo 100% online
                         </Typography>
                     </Box>
                 </Grid>

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { toPng } from 'html-to-image';
 import {
   Dialog,
   DialogTitle,
@@ -13,13 +14,19 @@ import {
   Chip,
 } from "@mui/material"
 import Grid from "@mui/material/Grid2";
-import { Close as CloseIcon, Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material"
+import {
+  Close as CloseIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Share as ShareIcon
+} from "@mui/icons-material"
 import ProfileModal from "../../ProfileModal";
 
 const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete }) => {
 
   const [profileOpen, setProfileOpen] = useState(false);
   const theme = useTheme();
+  const modalRef = useRef(null);
 
   if (!vehicle) return null
 
@@ -95,6 +102,35 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete }) => {
     "more_than_5_years": "Mais de 5 anos"
   }
 
+  // Função para exportar como imagem
+  const handleShare = async () => {
+    try {
+      if (!modalRef.current) return;
+
+      // Esconder botões de ação antes de capturar
+      const actionButtons = modalRef.current.querySelector('.MuiDialogActions-root');
+      if (actionButtons) actionButtons.style.display = 'none';
+
+      const dataUrl = await toPng(modalRef.current, {
+        backgroundColor: theme.palette.background.default,
+        quality: 1,
+        pixelRatio: 2 // Melhora a qualidade em dispositivos HiDPI
+      });
+
+      // Restaurar a visibilidade dos botões
+      if (actionButtons) actionButtons.style.display = 'flex';
+
+      // Criar link para download
+      const link = document.createElement('a');
+      link.download = `veiculo-${vehicle.brand?.nome}-${vehicle.model}.png`;
+      link.href = dataUrl;
+      link.click();
+
+    } catch (error) {
+      console.error('Erro ao gerar imagem:', error);
+    }
+  };
+
   return (
     <Dialog
       open={open}
@@ -107,6 +143,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete }) => {
           overflow: "hidden",
           maxHeight: "90vh",
         },
+        ref: modalRef //ref aqui
       }}
     >
       <DialogTitle sx={{ m: 0, p: 2, bgcolor: theme.palette.background.primary }}>
@@ -322,6 +359,16 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete }) => {
           }}
         >
           Excluir
+        </Button>
+        {/* Novo botão de compartilhar */}
+        <Button
+          startIcon={<ShareIcon />}
+          onClick={handleShare}
+          sx={{
+            color: theme.palette.primary.main,
+          }}
+        >
+          Compartilhar
         </Button>
         <Button
           onClick={onClose}
