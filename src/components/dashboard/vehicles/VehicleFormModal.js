@@ -407,7 +407,13 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={(event, reason) => {
+        // Impede o fechamento quando clica fora (backdrop) ou pressiona ESC
+        if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
+          return;
+        }
+        onClose(); // Permite o fechamento apenas quando chamado explicitamente (como no botão de fechar)
+      }}
       maxWidth="md"
       fullWidth
       PaperProps={{

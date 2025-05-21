@@ -63,6 +63,7 @@ const Dashboard = () => {
   const getUserData = async () => {
       
       const userData = await userService.getUserByUid(user.uid);
+      //Phone
       setIsAdmin(userData.isAdmin);
   }
 

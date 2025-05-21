@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { toPng } from 'html-to-image';
+// import { toPng } from 'html-to-image';
 import {
   Dialog,
   DialogTitle,
@@ -18,7 +18,7 @@ import {
   Close as CloseIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
-  Share as ShareIcon
+  // Share as ShareIcon
 } from "@mui/icons-material"
 import ProfileModal from "../../ProfileModal";
 
@@ -103,33 +103,33 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
   }
 
   // Função para exportar como imagem
-  const handleShare = async () => {
-    try {
-      if (!modalRef.current) return;
+  // const handleShare = async () => {
+  //   try {
+  //     if (!modalRef.current) return;
 
-      // Esconder botões de ação antes de capturar
-      const actionButtons = modalRef.current.querySelector('.MuiDialogActions-root');
-      if (actionButtons) actionButtons.style.display = 'none';
+  //     // Esconder botões de ação antes de capturar
+  //     const actionButtons = modalRef.current.querySelector('.MuiDialogActions-root');
+  //     if (actionButtons) actionButtons.style.display = 'none';
 
-      const dataUrl = await toPng(modalRef.current, {
-        backgroundColor: theme.palette.background.default,
-        quality: 1,
-        pixelRatio: 2 // Melhora a qualidade em dispositivos HiDPI
-      });
+  //     const dataUrl = await toPng(modalRef.current, {
+  //       backgroundColor: theme.palette.background.default,
+  //       quality: 1,
+  //       pixelRatio: 2 // Melhora a qualidade em dispositivos HiDPI
+  //     });
 
-      // Restaurar a visibilidade dos botões
-      if (actionButtons) actionButtons.style.display = 'flex';
+  //     // Restaurar a visibilidade dos botões
+  //     if (actionButtons) actionButtons.style.display = 'flex';
 
-      // Criar link para download
-      const link = document.createElement('a');
-      link.download = `veiculo-${vehicle.brand?.nome}-${vehicle.model}.png`;
-      link.href = dataUrl;
-      link.click();
+  //     // Criar link para download
+  //     const link = document.createElement('a');
+  //     link.download = `veiculo-${vehicle.brand?.nome}-${vehicle.model}.png`;
+  //     link.href = dataUrl;
+  //     link.click();
 
-    } catch (error) {
-      console.error('Erro ao gerar imagem:', error);
-    }
-  };
+  //   } catch (error) {
+  //     console.error('Erro ao gerar imagem:', error);
+  //   }
+  // };
 
   return (
     <Dialog
@@ -386,7 +386,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
           Excluir
         </Button>
         {/* Novo botão de compartilhar */}
-        {view &&
+        {/* {view &&
           <Button
             startIcon={<ShareIcon />}
             onClick={handleShare}
@@ -396,7 +396,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
           >
             Compartilhar
           </Button>
-        }
+        } */}
         <Button
           onClick={onClose}
           sx={{
