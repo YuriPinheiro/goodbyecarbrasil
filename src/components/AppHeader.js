@@ -46,7 +46,6 @@ const AppHeader = () => {
     const verifyPhone = async () => {
         try {
             const hasPhone = await userService.hasPhoneNumber(user.uid);
-            console.log(hasPhone)
             setShowPhoneAlert(!hasPhone);
         } catch (error) {
             console.error("Erro ao verificar telefone:", error);

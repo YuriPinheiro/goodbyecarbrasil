@@ -186,8 +186,6 @@ const deleteVehiclePhotos = async (userId, vehicleId) => {
 export const deleteVehicle = async (userId, vehicleId) => {
   try {
     // Primeiro deleta as fotos
-    console.log(userId)
-    console.log(vehicleId)
     await deleteVehiclePhotos(userId, vehicleId);
 
     // Depois deleta o documento do veículo

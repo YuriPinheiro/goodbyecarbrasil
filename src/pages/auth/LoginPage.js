@@ -48,7 +48,6 @@ const LoginPage = () => {
             try {
                 setGoogleLoading(true);
                 const result = await getRedirectResult(auth);
-                console.log("Result:", result)
                 if (result) {
                     const user = result.user;
 

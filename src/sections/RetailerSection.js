@@ -51,7 +51,6 @@ const RetailerSection = () => {
 
 
     useEffect(() => {
-        console.log(formValues)
     }, [formValues]);
     // Função onChange para atualizar os valores do formulário
     const handleInputChange = (event) => {

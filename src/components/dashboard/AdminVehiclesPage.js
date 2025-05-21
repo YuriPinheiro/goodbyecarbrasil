@@ -139,8 +139,7 @@ const AdminVehiclesPage = () => {
     }, [])
 
     useEffect(() => {
-        console.log("Vehicles:", vehicles);
-        console.log("Users:", users);
+  
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [users, vehicles])
 
@@ -209,7 +208,6 @@ const AdminVehiclesPage = () => {
         try {
             const usersData = await userService.getAllUsers();
             setUsers(usersData);
-            console.log(usersData)
         } catch (error) {
             console.error("Erro ao buscar usuarios:", error)
         }

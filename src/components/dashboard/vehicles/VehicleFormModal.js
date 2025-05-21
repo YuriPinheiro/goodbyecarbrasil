@@ -215,7 +215,6 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
   }, [open, photoFiles]);
 
   useEffect(() => {
-    console.log(selectedItems)
   }, [selectedItems]);
 
   const resetForm = () => {

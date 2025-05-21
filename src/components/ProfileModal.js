@@ -30,7 +30,6 @@ const ProfileModal = ({ open, onClose, userProvider, mode }) => {
     }, [open]);
 
     useEffect(() => {
-        console.log(user)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
