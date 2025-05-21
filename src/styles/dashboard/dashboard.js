@@ -63,6 +63,8 @@ const useStyles = makeStyles((theme) => ({
     mainContent: {
         flexGrow: 1,
         padding: theme.spacing(3),
+        paddingLeft: "0px",
+        paddingRight: "0px",
         marginTop: 64,
         transition: theme.transitions.create(['margin-left'], { // Array com propriedades
             easing: theme.transitions.easing.sharp,

@@ -69,9 +69,12 @@ const RegisterPage = () => {
         const newErrors = {};
         let isValid = true;
 
-        // Validação do nome
+        // Validação do nome completo
         if (!formData.name.trim()) {
             newErrors.name = "Nome é obrigatório";
+            isValid = false;
+        } else if (formData.name.trim().split(' ').length < 2) {
+            newErrors.name = "Por favor, digite seu nome completo";
             isValid = false;
         }
 

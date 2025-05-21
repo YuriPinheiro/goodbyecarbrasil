@@ -5,9 +5,9 @@ import useStyles from '../styles/sections/StepsSection';
 import { Box, Typography } from '@mui/material';
 
 const steps = [
-    { title: "Registro", subtitle: "Faça seu registro e cadastre seu veículo para vistoria;" },
+    { title: "Registro", subtitle: "Registre-se e faça você mesmo a vistoria do seu veículo;" },
     { title: "Avaliação", subtitle: "Nosso consultor avaliará seu veículo totalmente online;" },
-    { title: "Anúncio", subtitle: "Seu anúncio será feito em nossa rede de parceiros;" },
+    { title: "Anúncio", subtitle: "Seu anúncio será feito em nossa rede de mais de 5.000 parceiros comerciais;" },
     { title: "Proposta", subtitle: "Receba a melhor oferta sem custo;" },
     { title: "Finalização", subtitle: "Cuidamos da documentação e pagamento no ato;" }
 ]

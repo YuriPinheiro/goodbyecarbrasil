@@ -10,31 +10,45 @@ import {
     Avatar,
     Typography,
     Divider,
-    IconButton
+    IconButton,
+    MenuItem
 } from '@mui/material';
+import Grid from "@mui/material/Grid2";
 import { Close } from '@mui/icons-material';
 import { useTheme } from '@mui/material';
 import userService from '../stores/UserService';
 
+// Lista de estados brasileiros
+const estados = [
+    "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO",
+    "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI",
+    "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"
+];
+
 const ProfileModal = ({ open, onClose, userProvider, mode }) => {
     const [user, setUser] = useState({});
-    const [phone, setPhone] = React.useState(user?.phoneNumber || '');
-    const [displayPhone, setDisplayPhone] = React.useState('');
+    const [phone, setPhone] = useState(user?.phone || '');
+    const [displayPhone, setDisplayPhone] = useState('');
+    const [city, setCity] = useState(user?.city || '');
+    const [state, setState] = useState(user?.state || '');
     const theme = useTheme();
 
     useEffect(() => {
-        if(open){
+        if (open) {
             getUser();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open]);
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        if (user) {
+            setPhone(user?.phone || '');
+            setCity(user?.city || '');
+            setState(user?.state || '');
+        }
     }, [user]);
 
     useEffect(() => {
-        // Aplica a máscara quando o phone é carregado
         if (phone) {
             setDisplayPhone(formatPhone(phone));
         }
@@ -43,14 +57,11 @@ const ProfileModal = ({ open, onClose, userProvider, mode }) => {
     const getUser = async () => {
         const user = await userService.getUserByUid(userProvider.uid);
         setUser(user);
-        setPhone(user.phone || '');
     }
 
     const formatPhone = (value) => {
-        // Remove tudo que não é dígito
         const cleaned = value.replace(/\D/g, '');
-        
-        // Aplica a máscara conforme o tamanho
+
         if (cleaned.length <= 10) {
             return cleaned.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
         } else {
@@ -60,19 +71,36 @@ const ProfileModal = ({ open, onClose, userProvider, mode }) => {
 
     const handlePhoneChange = (event) => {
         const input = event.target.value;
-        // Remove todos os caracteres não numéricos
         const cleaned = input.replace(/\D/g, '');
-        
-        // Atualiza o estado com apenas números (para armazenamento)
         setPhone(cleaned);
-        
-        // Atualiza o valor exibido com a máscara
         setDisplayPhone(formatPhone(input));
     };
 
-    const handleSave = () => {
-        userService.updateUserPhone(userProvider.uid, phone);
-        onClose();
+    const handleCityChange = (event) => {
+        setCity(event.target.value);
+    };
+
+    const handleStateChange = (event) => {
+        setState(event.target.value);
+    };
+
+    const handleSave = async () => {
+        try {
+            await userService.updateUser(userProvider.uid, {
+                phone,
+                city,
+                state
+            });
+            onClose();
+        } catch (error) {
+            console.error("Erro ao atualizar perfil:", error);
+        }
+    };
+
+    const hasChanges = () => {
+        return phone !== (user?.phone || '') ||
+            city !== (user?.city || '') ||
+            state !== (user?.state || '');
     };
 
     return (
@@ -126,29 +154,65 @@ const ProfileModal = ({ open, onClose, userProvider, mode }) => {
                     <TextField
                         label="Telefone"
                         value={displayPhone}
-                        disabled={Boolean(mode==='view')}
+                        disabled={mode === 'view'}
                         onChange={handlePhoneChange}
                         fullWidth
                         margin="normal"
                         variant="outlined"
                         placeholder="(99) 99999-9999"
                         inputProps={{
-                            maxLength: 15 // Tamanho máximo com máscara
+                            maxLength: 15
                         }}
                     />
+
+                    
+                        <Grid container spacing={2}>
+                            <Grid size={{ xs: 8 }}>
+                                <TextField
+                                    label="Cidade"
+                                    value={city}
+                                    disabled={mode === 'view'}
+                                    onChange={handleCityChange}
+                                    fullWidth
+                                    margin="normal"
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 4 }}>
+                                <TextField
+                                    select
+                                    label="Estado"
+                                    value={state}
+                                    disabled={mode === 'view'}
+                                    onChange={handleStateChange}
+                                    fullWidth
+                                    margin="normal"
+                                    variant="outlined"
+                                    sx={{ minWidth: 120 }}
+                                >
+                                    {estados.map((estado) => (
+                                        <MenuItem key={estado} value={estado}>
+                                            {estado}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            </Grid>
+                        </Grid>
                 </Box>
             </DialogContent>
 
             <DialogActions>
                 <Button onClick={onClose}>Cancelar</Button>
-                <Button
-                    onClick={handleSave}
-                    variant="contained"
-                    color="primary"
-                    disabled={phone === (user?.phone || '')}
-                >
-                    Salvar
-                </Button>
+                {mode !== 'view' && (
+                    <Button
+                        onClick={handleSave}
+                        variant="contained"
+                        color="primary"
+                        disabled={!hasChanges()}
+                    >
+                        Salvar
+                    </Button>
+                )}
             </DialogActions>
         </Dialog>
     );

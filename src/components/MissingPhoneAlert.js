@@ -32,7 +32,7 @@ const MissingPhoneAlert = ({ show, onClose, onAddPhoneClick }) => {
         <Box display="flex" alignItems="center">
           <Phone color="error" sx={{ mr: 1 }} />
           <Typography variant="body2">
-            <strong>Atenção:</strong> Você não tem um telefone cadastrado. Por favor, adicione um telefone para contato.
+            <strong>Atenção:</strong> Você não tem um telefone cadastrado. Por favor, adicione um telefone para contato para poder cadastrar veículos.
           </Typography>
         </Box>
         

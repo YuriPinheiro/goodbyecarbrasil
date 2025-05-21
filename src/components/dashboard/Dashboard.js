@@ -11,6 +11,10 @@ import {
   ListItemText,
   Alert,
   Snackbar,
+  BottomNavigation,
+  BottomNavigationAction,
+  useMediaQuery,
+  Paper
 } from "@mui/material"
 import Grid from "@mui/material/Grid2";
 import { useAuth } from "../../contexts/AuthContext";
@@ -34,10 +38,12 @@ const Dashboard = () => {
   const { isExpanded } = useMenu();
   const classes = useStyles();
   const [vehicles, setVehicles] = useState([])
-  const [activeTab, setActiveTab] = useState('Meus Veículos'); // Estado para controlar a aba ativa
+  const [activeTab, setActiveTab] = useState('Meus Veículos');
+  const isMobile = useMediaQuery(theme.breakpoints.down('md')); // Detecta mobile
 
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [hasPhone, setHasPhone] = useState(false);
   // Modal states
   const [formModalOpen, setFormModalOpen] = useState(false)
   const [detailsModalOpen, setDetailsModalOpen] = useState(false)
@@ -54,17 +60,22 @@ const Dashboard = () => {
   }, [activeTab]);
 
   useEffect(() => {
-    if(user){
+    if (user) {
       getUserData();
+      checkPhone();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
+
+  const checkPhone = async () => {
+    const hasPhone = await userService.hasPhoneNumber(user.uid);
+    setHasPhone(hasPhone);
+  }
   const getUserData = async () => {
-      
-      const userData = await userService.getUserByUid(user.uid);
-      //Phone
-      setIsAdmin(userData.isAdmin);
+
+    const userData = await userService.getUserByUid(user.uid);
+    setIsAdmin(userData.isAdmin);
   }
 
   const getVehicles = async () => {
@@ -127,18 +138,20 @@ const Dashboard = () => {
 
   const getMenuItems = () => {
     const baseItems = [
-      { icon: <CarIcon />, label: 'Meus Veículos' }
+      { icon: <CarIcon />, label: 'Meus Veículos', value: 'Meus Veículos' }
     ];
-    
+
     if (isAdmin) {
       return [
-        { icon: <DashboardIcon />, label: 'Dashboard' },
+        { icon: <DashboardIcon />, label: 'Dashboard', value: 'Dashboard' },
         ...baseItems
       ];
     }
-    
+
     return baseItems;
   };
+
+  const menuItems = getMenuItems();
 
 
   const renderContent = () => {
@@ -159,6 +172,7 @@ const Dashboard = () => {
               {!(vehicles.length === 0) &&
                 <Button
                   variant="contained"
+                  disabled={!hasPhone}
                   startIcon={<AddIcon />}
                   onClick={handleAddVehicle}
                   className={classes.addButton}
@@ -179,6 +193,7 @@ const Dashboard = () => {
                 </Typography>
                 <Button
                   variant="contained"
+                  disabled={!hasPhone}
                   startIcon={<AddIcon />}
                   onClick={handleAddVehicle}
                   className={classes.addButton}
@@ -209,46 +224,89 @@ const Dashboard = () => {
 
   return (
     <Box className={classes.root}>
-      {/* Menu Lateral Fixo */}
-      <Box className={classes.sidebar} style={{ width: isExpanded ? 240 : 68 }}>
-        <Box className={classes.sidebarContent}>
-          <List>
-            {getMenuItems().map((item) => (
-              <ListItem key={item.label} disablePadding>
-                <ListItemButton
-                  selected={activeTab === item.label}
-                  onClick={() => handleTabChange(item.label)}
-                  sx={{
-                    padding: theme.spacing(2),
-                    '&.Mui-selected': {
-                      backgroundColor: theme.palette.action.selected,
-                    },
-                    '&:hover': {
-                      backgroundColor: theme.palette.action.hover,
-                    },
-                  }}
-                >
-                  <ListItemIcon sx={{
-                    minWidth: 'auto',
-                    color: 'inherit',
-                    mr: isExpanded ? 2 : 'auto'
-                  }}>
-                    {item.icon}
-                  </ListItemIcon>
-                  {isExpanded && (
-                    <ListItemText primary={item.label} />
-                  )}
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
+      {/* Menu Lateral (apenas para desktop) */}
+      {!isMobile && (
+        <Box className={classes.sidebar} style={{ width: isExpanded ? 240 : 68 }}>
+          <Box className={classes.sidebarContent}>
+            <List>
+              {menuItems.map((item) => (
+                <ListItem key={item.label} disablePadding>
+                  <ListItemButton
+                    selected={activeTab === item.label}
+                    onClick={() => handleTabChange(item.label)}
+                    sx={{
+                      padding: theme.spacing(2),
+                      '&.Mui-selected': {
+                        backgroundColor: theme.palette.action.selected,
+                      },
+                      '&:hover': {
+                        backgroundColor: theme.palette.action.hover,
+                      },
+                    }}
+                  >
+                    <ListItemIcon sx={{
+                      minWidth: 'auto',
+                      color: 'inherit',
+                      mr: isExpanded ? 2 : 'auto'
+                    }}>
+                      {item.icon}
+                    </ListItemIcon>
+                    {isExpanded && (
+                      <ListItemText primary={item.label} />
+                    )}
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
         </Box>
-      </Box>
+      )}
 
       {/* Main content */}
-      <Box component="main" className={classes.mainContent} style={{ marginLeft: isExpanded ? 240 : 68 }}>
+      <Box
+        component="main"
+        className={classes.mainContent}
+        style={{
+          marginLeft: !isMobile ? (isExpanded ? 240 : 68) : 0,
+          paddingBottom: isMobile ? '80px' : 0 // Espaço para o BottomNavigation
+        }}
+      >
         {renderContent()}
       </Box>
+
+      {/* BottomNavigation (apenas para mobile) */}
+      {isMobile && (
+        <Paper
+          sx={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: theme.zIndex.appBar
+          }}
+          elevation={3}
+        >
+          <BottomNavigation
+            showLabels
+            value={activeTab}
+            onChange={(event, newValue) => handleTabChange(newValue)}
+          >
+            {menuItems.map((item) => (
+              <BottomNavigationAction
+                key={item.value}
+                label={item.label}
+                value={item.value}
+                icon={item.icon}
+                sx={{
+                  '&.Mui-selected': {
+                    color: theme.palette.primary.main
+                  }
+                }}
+              />
+            ))}
+          </BottomNavigation>
+        </Paper>
+      )}
 
       {/* Modals - Eles só aparecem quando a aba "Meus Veículos" está ativa */}
       {activeTab === 'Meus Veículos' && (

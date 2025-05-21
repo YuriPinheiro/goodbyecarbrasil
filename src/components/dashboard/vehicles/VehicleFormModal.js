@@ -39,10 +39,7 @@ const photoTypes = [
   { id: "diagonalRearRight", label: "Diagonal traseira - lado 2", description: "Foto diagonal traseira do lado do passageiro" },
   { id: "backSeat", label: "Banco traseiro", description: "Foto dos bancos traseiros do veículo" },
   { id: "lights", label: "Lanterna/Farol", description: "Foto dos faróis ou lanternas traseiras" },
-  { id: "wheelFrontLeft", label: "Pneu dianteiro esquerdo", description: "Foto da roda/pneu dianteiro esquerdo" },
-  { id: "wheelFrontRight", label: "Pneu dianteiro direito", description: "Foto da roda/pneu dianteiro direito" },
-  { id: "wheelRearLeft", label: "Pneu traseiro esquerdo", description: "Foto da roda/pneu traseiro esquerdo" },
-  { id: "wheelRearRight", label: "Pneu traseiro direito", description: "Foto da roda/pneu traseiro direito" },
+  { id: "wheels", label: "Estado dos pneus", description: "Foto da roda/pneu" },
   { id: "damage1", label: "Avarias - Foto 1 (Opcional)", description: "Foto de avarias ou danos no veículo" },
   { id: "damage2", label: "Avarias - Foto 2 (Opcional)", description: "Foto de avarias ou danos no veículo" },
   { id: "damage3", label: "Avarias - Foto 3 (Opcional)", description: "Foto de avarias ou danos no veículo" }
