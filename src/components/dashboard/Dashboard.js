@@ -164,7 +164,7 @@ const Dashboard = () => {
         ); // Componente para o conteúdo do Dashboard
       case 'Meus Veículos':
         return (
-          <>
+          <div style={{padding: "10px 15px"}}>
             <Box className={classes.pageHeader}>
               <Typography variant="h5" fontWeight="bold" color="text.primary">
                 Meus Veículos
@@ -215,7 +215,7 @@ const Dashboard = () => {
                 ))}
               </Grid>
             )}
-          </>
+          </div>
         );
       default:
         return null;
