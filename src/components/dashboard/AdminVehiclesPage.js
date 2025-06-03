@@ -38,7 +38,7 @@ import {
 import VehicleFormModal from "./vehicles/VehicleFormModal"
 import VehicleDetailsModal from "./vehicles/VehiclesDetail"
 import DeleteConfirmationModal from "./vehicles/DeleteModal"
-import { getAllVehicles } from "../../stores/VeihcleService"
+import { deleteVehicle, getAllVehicles } from "../../stores/VeihcleService"
 import userService from "../../stores/UserService"
 import ProfileModal from "../ProfileModal"
 
@@ -289,7 +289,10 @@ const AdminVehiclesPage = () => {
 
     const confirmDeleteVehicle = () => {
         if (selectedVehicle) {
-            setVehicles(vehicles.filter((v) => v.id !== selectedVehicle.id))
+            let confirmation = deleteVehicle(selectedVehicle?.user?.id, selectedVehicle.id)
+            if(confirmation){
+                setVehicles(vehicles.filter((v) => v.id !== selectedVehicle.id))
+            }
             setDeleteModalOpen(false)
             setSelectedVehicle(null)
         }

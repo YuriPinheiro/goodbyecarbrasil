@@ -31,15 +31,13 @@ const photoTypes = [
   { id: "side", label: "Lateral", description: "Foto lateral do veículo (use também as diagonais)" },
   { id: "back", label: "Traseira", description: "Foto diretamente da traseira do veículo" },
   { id: "trunk", label: "Porta-malas", description: "Foto do porta-malas aberto" },
-  { id: "interior", label: "Painel", description: "Foto do painel e bancos dianteiros" },
   { id: "engine", label: "Motor", description: "Foto do compartimento do motor com o capô aberto" },
+  { id: "Km", label: "Quilometragem", description: "Foto do contador de quilometros do veículo" },
   { id: "diagonalFrontLeft", label: "Diagonal frontal - lado 1", description: "Foto diagonal frontal do lado do motorista" },
   { id: "diagonalFrontRight", label: "Diagonal frontal - lado 2", description: "Foto diagonal frontal do lado do passageiro" },
   { id: "diagonalRearLeft", label: "Diagonal traseira - lado 1", description: "Foto diagonal traseira do lado do motorista" },
   { id: "diagonalRearRight", label: "Diagonal traseira - lado 2", description: "Foto diagonal traseira do lado do passageiro" },
   { id: "backSeat", label: "Banco traseiro", description: "Foto dos bancos traseiros do veículo" },
-  { id: "lights", label: "Lanterna/Farol", description: "Foto dos faróis ou lanternas traseiras" },
-  { id: "wheels", label: "Estado dos pneus", description: "Foto da roda/pneu" },
   { id: "damage1", label: "Avarias - Foto 1 (Opcional)", description: "Foto de avarias ou danos no veículo" },
   { id: "damage2", label: "Avarias - Foto 2 (Opcional)", description: "Foto de avarias ou danos no veículo" },
   { id: "damage3", label: "Avarias - Foto 3 (Opcional)", description: "Foto de avarias ou danos no veículo" }
@@ -94,6 +92,13 @@ const ownershipTimeOptions = [
   { value: "more_than_5_years", label: "Mais de 5 anos" },
 ];
 
+const conditionOptions = [
+  { value: "excellent", label: "Excelente" },
+  { value: "good", label: "Bom" },
+  { value: "regular", label: "Regular" },
+  { value: "bad", label: "Ruim" },
+];
+
 const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, onFeedback }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -105,6 +110,10 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
   const [plate, setPlate] = useState("");
   const [description, setDescription] = useState("");
   const [mileage, setMileage] = useState("");
+  const [paintCondition, setPaintCondition] = useState("");
+  const [mechanicalCondition, setMechanicalCondition] = useState("");
+  const [interiorCondition, setInteriorCondition] = useState("");
+  const [tiresCondition, setTiresCondition] = useState("");
   const [ownershipTime, setOwnershipTime] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
   const [photoFiles, setPhotoFiles] = useState({});
@@ -133,7 +142,7 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
 
   // Years for dropdown
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 20 }, (_, i) => (currentYear - i).toString());
+  const years = Array.from({ length: 36 }, (_, i) => (currentYear - i).toString());
 
   useEffect(() => {
     const loadBrands = async () => {
@@ -184,6 +193,10 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
       setPlate(vehicle.plate || "");
       setDescription(vehicle.description || "");
       setMileage(vehicle.mileage || "");
+      setPaintCondition(vehicle.paintCondition || "");
+      setMechanicalCondition(vehicle.mechanicalCondition || "");
+      setInteriorCondition(vehicle.interiorCondition || "");
+      setTiresCondition(vehicle.tiresCondition || "");
       setOwnershipTime(vehicle.ownershipTime || "");
       setSelectedItems(vehicle.items || []);
       setPhotos(vehicle.photos || {
@@ -196,6 +209,7 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
         damage2: "",
         damage3: ""
       });
+
     } else {
       resetForm();
     }
@@ -238,6 +252,10 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
     setErrorMessage("");
     setPhotoFiles({});
     setUploadProgress({});
+    setPaintCondition("");
+    setMechanicalCondition("");
+    setInteriorCondition("");
+    setTiresCondition("");
   };
 
   const validateForm = () => {
@@ -321,7 +339,11 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
           damage1: photos.damage1 || null,
           damage2: photos.damage2 || null,
           damage3: photos.damage3 || null
-        }
+        },
+        paintCondition,
+        mechanicalCondition,
+        interiorCondition,
+        tiresCondition
       };
 
       let vehicleId;
@@ -663,6 +685,86 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
                   required
                   error={!!errors.ownershipTime}
                   helperText={errors.ownershipTime}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Autocomplete
+              value={paintCondition}
+              onChange={(_, newValue) => {
+                setPaintCondition(newValue || "");
+              }}
+              options={conditionOptions.map(opt => opt.value)}
+              getOptionLabel={(option) =>
+                conditionOptions.find(opt => opt.value === option)?.label || ""
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Estado da pintura"
+                  fullWidth
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Autocomplete
+              value={mechanicalCondition}
+              onChange={(_, newValue) => {
+                setMechanicalCondition(newValue || "");
+              }}
+              options={conditionOptions.map(opt => opt.value)}
+              getOptionLabel={(option) =>
+                conditionOptions.find(opt => opt.value === option)?.label || ""
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Estado da mecânica"
+                  fullWidth
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Autocomplete
+              value={interiorCondition}
+              onChange={(_, newValue) => {
+                setInteriorCondition(newValue || "");
+              }}
+              options={conditionOptions.map(opt => opt.value)}
+              getOptionLabel={(option) =>
+                conditionOptions.find(opt => opt.value === option)?.label || ""
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Estado interior"
+                  fullWidth
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Autocomplete
+              value={tiresCondition}
+              onChange={(_, newValue) => {
+                setTiresCondition(newValue || "");
+              }}
+              options={conditionOptions.map(opt => opt.value)}
+              getOptionLabel={(option) =>
+                conditionOptions.find(opt => opt.value === option)?.label || ""
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Estado dos pneus"
+                  fullWidth
                 />
               )}
             />
