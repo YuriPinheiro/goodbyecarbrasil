@@ -1,4 +1,5 @@
-import React from "react"
+import React, { useEffect } from "react"
+import { useLocation } from 'react-router-dom';
 import { useState } from "react"
 import {
   Box,
@@ -18,6 +19,8 @@ import {
 } from "@mui/material"
 import { Email, Lock, Visibility, VisibilityOff } from "@mui/icons-material"
 import { Link as RouterLink } from "react-router-dom"
+import { sendPasswordResetEmail, confirmPasswordReset, verifyPasswordResetCode } from "firebase/auth"
+import { auth } from "../../stores/FirebaseStore";
 
 const RecoverPasswordPage = () => {
   const [activeStep, setActiveStep] = useState(0)
@@ -32,53 +35,89 @@ const RecoverPasswordPage = () => {
   const [passwordError, setPasswordError] = useState("")
   const [confirmPasswordError, setConfirmPasswordError] = useState("")
   const [success, setSuccess] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const location = useLocation();
 
   const theme = useTheme()
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const oobCode = queryParams.get('oobCode');
+    const modeParam = queryParams.get('mode');
+
+    if (oobCode && modeParam === 'resetPassword') {
+      setCode(oobCode);
+      setActiveStep(1) // Pula direto para a verificação
+      // Opcional: verificar automaticamente o código
+      verifyPasswordResetCode(auth, oobCode)
+        .then((email) => {
+          setEmail(email); 
+          setActiveStep(2);
+        })
+        .catch((error) => {
+          setCodeError('Código inválido ou expirado');
+        });
+    }
+  }, [location]);
 
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return re.test(email)
   }
 
-  const handleRequestCode = (e) => {
+  const handleRequestCode = async (e) => {
     e.preventDefault()
-
+    setLoading(true)
     setEmailError("")
 
     if (!email) {
       setEmailError("Email é obrigatório")
+      setLoading(false)
       return
     } else if (!validateEmail(email)) {
       setEmailError("Email inválido")
+      setLoading(false)
       return
     }
 
-    // Simulate sending code to email
-    console.log("Enviando código para:", email)
-    setActiveStep(1)
+    try {
+      await sendPasswordResetEmail(auth, email)
+      setActiveStep(1)
+    } catch (error) {
+      console.error("Erro ao enviar email de recuperação:", error)
+      setEmailError("Erro ao enviar email. Verifique se o email está correto.")
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleVerifyCode = (e) => {
+  const handleVerifyCode = async (e) => {
     e.preventDefault()
-
+    setLoading(true)
     setCodeError("")
 
     if (!code) {
       setCodeError("Código é obrigatório")
-      return
-    } else if (code.length !== 6) {
-      setCodeError("O código deve ter 6 dígitos")
+      setLoading(false)
       return
     }
 
-    // Simulate verifying code
-    console.log("Verificando código:", code)
-    setActiveStep(2)
+    try {
+      // Verifica se o código de redefinição é válido
+      await verifyPasswordResetCode(auth, code)
+      setActiveStep(2)
+    } catch (error) {
+      console.error("Erro ao verificar código:", error)
+      setCodeError("Código inválido ou expirado")
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleResetPassword = (e) => {
+  const handleResetPassword = async (e) => {
     e.preventDefault()
-
+    setLoading(true)
     setPasswordError("")
     setConfirmPasswordError("")
 
@@ -100,10 +139,19 @@ const RecoverPasswordPage = () => {
       isValid = false
     }
 
-    if (isValid) {
-      // Simulate resetting password
-      console.log("Redefinindo senha para:", { email, password })
+    if (!isValid) {
+      setLoading(false)
+      return
+    }
+
+    try {
+      await confirmPasswordReset(auth, code, password)
       setSuccess(true)
+    } catch (error) {
+      console.error("Erro ao redefinir senha:", error)
+      setPasswordError("Erro ao redefinir senha. Tente novamente.")
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -152,6 +200,7 @@ const RecoverPasswordPage = () => {
               type="submit"
               fullWidth
               variant="contained"
+              disabled={loading}
               sx={{
                 mt: 3,
                 mb: 2,
@@ -164,7 +213,7 @@ const RecoverPasswordPage = () => {
                 },
               }}
             >
-              Enviar Código
+              {loading ? 'Enviando...' : 'Enviar Código'}
             </Button>
           </Box>
         )
@@ -172,7 +221,7 @@ const RecoverPasswordPage = () => {
         return (
           <Box component="form" onSubmit={handleVerifyCode} noValidate>
             <Typography variant="body2" color="text.primary" sx={{ mb: 2 }}>
-              Digite o código de 6 dígitos enviado para {email}.
+              Digite o código de verificação enviado para {email}.
             </Typography>
             <TextField
               margin="normal"
@@ -183,10 +232,9 @@ const RecoverPasswordPage = () => {
               name="code"
               autoFocus
               value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              onChange={(e) => setCode(e.target.value)}
               error={!!codeError}
               helperText={codeError}
-              inputProps={{ maxLength: 6 }}
               sx={{
                 "& .MuiOutlinedInput-root": {
                   "&.Mui-focused fieldset": {
@@ -201,6 +249,7 @@ const RecoverPasswordPage = () => {
             <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
               <Button
                 onClick={() => setActiveStep(0)}
+                disabled={loading}
                 sx={{
                   color: theme.palette.primary.main,
                 }}
@@ -210,6 +259,7 @@ const RecoverPasswordPage = () => {
               <Button
                 type="submit"
                 variant="contained"
+                disabled={loading}
                 sx={{
                   py: 1,
                   px: 3,
@@ -221,7 +271,7 @@ const RecoverPasswordPage = () => {
                   },
                 }}
               >
-                Verificar
+                {loading ? 'Verificando...' : 'Verificar'}
               </Button>
             </Box>
           </Box>
@@ -319,6 +369,7 @@ const RecoverPasswordPage = () => {
             <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
               <Button
                 onClick={() => setActiveStep(1)}
+                disabled={loading}
                 sx={{
                   color: theme.palette.primary.main,
                 }}
@@ -328,6 +379,7 @@ const RecoverPasswordPage = () => {
               <Button
                 type="submit"
                 variant="contained"
+                disabled={loading}
                 sx={{
                   py: 1,
                   px: 3,
@@ -339,7 +391,7 @@ const RecoverPasswordPage = () => {
                   },
                 }}
               >
-                Redefinir Senha
+                {loading ? 'Redefinindo...' : 'Redefinir Senha'}
               </Button>
             </Box>
           </Box>
@@ -448,4 +500,3 @@ const RecoverPasswordPage = () => {
 }
 
 export default RecoverPasswordPage
-
