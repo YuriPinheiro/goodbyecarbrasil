@@ -27,20 +27,21 @@ import { uploadVehiclePhoto, addVehicle, updateVehicle, fetchCarBrands, fetchCar
 
 const photoTypes = [
   { id: "front", label: "Frente", description: "Foto diretamente da frente do veículo" },
-  { id: "side", label: "Lateral", description: "Foto lateral do veículo (use também as diagonais)" },
-  { id: "back", label: "Traseira", description: "Foto diretamente da traseira do veículo" },
-  { id: "trunk", label: "Porta-malas", description: "Foto do porta-malas aberto" },
-  { id: "engine", label: "Motor", description: "Foto do compartimento do motor com o capô aberto" },
-  { id: "Km", label: "Quilometragem", description: "Foto do contador de quilometros do veículo" },
-  { id: "diagonalFrontLeft", label: "Diagonal frontal - lado 1", description: "Foto diagonal frontal do lado do motorista" },
   { id: "diagonalFrontRight", label: "Diagonal frontal - lado 2", description: "Foto diagonal frontal do lado do passageiro" },
-  { id: "diagonalRearLeft", label: "Diagonal traseira - lado 1", description: "Foto diagonal traseira do lado do motorista" },
+  { id: "side", label: "Lateral", description: "Foto lateral do veículo (use também as diagonais)" },
   { id: "diagonalRearRight", label: "Diagonal traseira - lado 2", description: "Foto diagonal traseira do lado do passageiro" },
+  { id: "back", label: "Traseira", description: "Foto diretamente da traseira do veículo" },
+  { id: "diagonalRearLeft", label: "Diagonal traseira - lado 1", description: "Foto diagonal traseira do lado do motorista" },
+  { id: "diagonalFrontLeft", label: "Diagonal frontal - lado 1", description: "Foto diagonal frontal do lado do motorista" },
+  { id: "engine", label: "Motor", description: "Foto do compartimento do motor com o capô aberto" },
+  { id: "trunk", label: "Porta-malas", description: "Foto do porta-malas aberto" },
+  { id: "Km", label: "Quilometragem", description: "Foto do contador de quilometros do veículo" },
   { id: "backSeat", label: "Banco traseiro", description: "Foto dos bancos traseiros do veículo" },
   { id: "damage1", label: "Avarias - Foto 1 (Opcional)", description: "Foto de avarias ou danos no veículo" },
   { id: "damage2", label: "Avarias - Foto 2 (Opcional)", description: "Foto de avarias ou danos no veículo" },
   { id: "damage3", label: "Avarias - Foto 3 (Opcional)", description: "Foto de avarias ou danos no veículo" }
 ];
+
 
 
 // Opções de itens do veículo
