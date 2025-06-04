@@ -22,8 +22,7 @@ import {
 import Grid from "@mui/material/Grid2";
 import { Close as CloseIcon, CloudUpload as CloudUploadIcon, CameraAlt as CameraAltIcon } from "@mui/icons-material";
 import { uploadVehiclePhoto, addVehicle, updateVehicle, fetchCarBrands, fetchCarModels } from "../../../stores/VeihcleService";
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import DialogContentText from '@mui/material/DialogContentText';
+
 
 
 const photoTypes = [
@@ -129,7 +128,6 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
     damage2: "",
     damage3: ""
   });
-  const [helpModal, setHelpModal] = useState(false);
 
   const [errors, setErrors] = useState({});
   const [availableModels, setAvailableModels] = useState([]);
@@ -866,11 +864,6 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
                       Fotos do Veículo
                     </Typography>
                   </Grid>
-                  <Grid>
-                    <IconButton onClick={() => setHelpModal(true)} size="small">
-                      <HelpOutlineIcon fontSize="small" />
-                    </IconButton>
-                  </Grid>
                 </Grid>
               </Grid>
               <Grid size={{ xs: 12 }}>
@@ -893,13 +886,27 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
                   flexDirection: "column",
                   alignItems: "center",
                   height: "100%",
+                  textAlign: "center",
                   minHeight: 200,
                   position: "relative",
+                  backgroundImage: !photos[type.id] ? `url(/images/${type.id}.png)` : 'none',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(255, 255, 255, 0.76)',
+                    zIndex: 1, // Apenas o overlay fica atrás
+                  },
                 }}
               >
-
                 {photos[type.id] ? (
-                  <>
+                  <Box sx={{ position: 'relative', zIndex: 2, width: '100%' }}>
                     <Box
                       component="img"
                       src={photos[type.id]}
@@ -918,6 +925,8 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
                         component="label"
                         sx={{
                           color: theme.palette.primary.main,
+                          position: 'relative',
+                          zIndex: 2
                         }}
                       >
                         Alterar
@@ -935,6 +944,8 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
                           onClick={() => captureFromCamera(type.id)}
                           sx={{
                             color: theme.palette.primary.main,
+                            position: 'relative',
+                            zIndex: 2
                           }}
                           startIcon={<CameraAltIcon fontSize="small" />}
                         >
@@ -958,13 +969,14 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
                             fileInputsRef.current[type.id].value = "";
                           }
                         }}
+                        sx={{ position: 'relative', zIndex: 2 }}
                       >
                         Remover
                       </Button>
                     </Box>
-                  </>
+                  </Box>
                 ) : (
-                  <>
+                  <Box sx={{ position: 'relative', zIndex: 2, width: '100%' }}>
                     {uploadProgress[type.id] ? (
                       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
                         <CircularProgress
@@ -972,7 +984,7 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
                           value={uploadProgress[type.id]}
                           sx={{ mb: 2, color: theme.palette.colors.primary }}
                         />
-                        <Typography variant="caption" color="text.primary" >
+                        <Typography variant="caption" color="text.primary">
                           Enviando... {uploadProgress[type.id]}%
                         </Typography>
                       </Box>
@@ -991,10 +1003,11 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
                         <Typography variant="body2" color="text.primary" align="center" sx={{ mb: 2 }}>
                           {type.description}
                         </Typography>
-                        <Box sx={{ display: 'flex', gap: 2 }}>
+                        <Box sx={{ display: 'flex', gap: 2, textAlign: "center" }}>
                           <Button
                             variant="outlined"
                             size="small"
+                            fullWidth
                             component="label"
                             sx={{
                               borderColor: theme.palette.primary.main,
@@ -1035,11 +1048,11 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
                       </>
                     )}
                     {errors[`photo_${type.id}`] && (
-                      <FormHelperText error sx={{ position: "absolute", bottom: 8 }}>
+                      <FormHelperText error sx={{ position: "absolute", bottom: 8, left: 16, zIndex: 2 }}>
                         {errors[`photo_${type.id}`]}
                       </FormHelperText>
                     )}
-                  </>
+                  </Box>
                 )}
               </Box>
             </Grid>
@@ -1076,52 +1089,6 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
 
       </DialogActions>
 
-      {/* Modal de ajuda com exemplos */}
-      <Dialog
-        open={helpModal}
-        onClose={() => setHelpModal(false)}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>Como tirar as fotos do veículo</DialogTitle>
-        <DialogContent>
-          <DialogContentText sx={{ mb: 2 }}>
-            Confira abaixo o exemplo de como cada foto deve ser tirada:
-          </DialogContentText>
-
-          <Box
-            component="img"
-            src="/images/exemplos-fotos-veiculo.jpg" // Substitua pelo caminho da sua imagem
-            alt="Exemplo de fotos do veículo"
-            sx={{
-              width: '100%',
-              borderRadius: 2,
-              border: '1px solid',
-              borderColor: 'divider'
-            }}
-          />
-
-          <DialogContentText sx={{ mt: 2 }}>
-            <Typography variant="body2" component="div">
-              <strong>Dicas importantes:</strong>
-              <ul>
-                <li>Mantenha o veículo centralizado em todas as fotos</li>
-                <li>Evite sombras fortes sobre o veículo</li>
-                <li>Certifique-se de que todas as partes estão visíveis</li>
-                <li>Use fundo neutro quando possível</li>
-              </ul>
-            </Typography>
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setHelpModal(false)}
-            variant="contained"
-          >
-            Entendi
-          </Button>
-        </DialogActions>
-      </Dialog>
 
     </Dialog >
   );

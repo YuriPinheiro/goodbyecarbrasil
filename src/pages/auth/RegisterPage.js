@@ -40,6 +40,8 @@ const RegisterPage = () => {
         name: "",
         email: "",
         phone: "",
+        city: "",
+        state: "",
         password: "",
         confirmPassword: "",
         acceptTerms: false,
@@ -75,6 +77,18 @@ const RegisterPage = () => {
             isValid = false;
         } else if (formData.name.trim().split(' ').length < 2) {
             newErrors.name = "Por favor, digite seu nome completo";
+            isValid = false;
+        }
+
+        // Validação da cidade
+        if (!formData.city.trim()) {
+            newErrors.city = "Cidade é obrigatória";
+            isValid = false;
+        }
+
+        // Validação do estado
+        if (!formData.state) {
+            newErrors.state = "Estado é obrigatório";
             isValid = false;
         }
 
@@ -131,16 +145,16 @@ const RegisterPage = () => {
                 name: formData.name,
                 email: user.email,
                 phone: formData.phone,
+                city: formData.city,
+                state: formData.state,
                 termsAccepted: formData.acceptTerms,
                 createdAt: serverTimestamp(),
                 lastLogin: serverTimestamp()
             });
 
-            navigate("/login", {
-                state: {
-                    registrationSuccess: true,
-                    email: formData.email
-                }
+
+            navigate("/dashboard", {
+                replace: true
             });
 
         } catch (error) {
@@ -247,6 +261,77 @@ const RegisterPage = () => {
                                 </Grid>
                             ))}
 
+                            {/* Novo campo - Cidade */}
+                            <Grid item size={{ xs: 12, sm: 6 }}>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    id="city"
+                                    label="Cidade"
+                                    name="city"
+                                    value={formData.city}
+                                    onChange={handleChange}
+                                    error={!!errors.city}
+                                    helperText={errors.city}
+                                    sx={{
+                                        "& label": { color: "black" },
+                                        "& .MuiInputBase-root": { color: "black" }
+                                    }}
+                                />
+                            </Grid>
+
+                            {/* Novo campo - Estado */}
+                            <Grid item size={{ xs: 12, sm: 6 }}>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    id="state"
+                                    label="Estado"
+                                    name="state"
+                                    value={formData.state}
+                                    onChange={handleChange}
+                                    error={!!errors.state}
+                                    helperText={errors.state}
+                                    select
+                                    SelectProps={{
+                                        native: true,
+                                    }}
+                                    sx={{
+                                        "& label": { color: "black" },
+                                        "& .MuiInputBase-root": { color: "white" }
+                                    }}
+                                >
+                                    <option value=""></option>
+                                    <option value="AC">Acre</option>
+                                    <option value="AL">Alagoas</option>
+                                    <option value="AP">Amapá</option>
+                                    <option value="AM">Amazonas</option>
+                                    <option value="BA">Bahia</option>
+                                    <option value="CE">Ceará</option>
+                                    <option value="DF">Distrito Federal</option>
+                                    <option value="ES">Espírito Santo</option>
+                                    <option value="GO">Goiás</option>
+                                    <option value="MA">Maranhão</option>
+                                    <option value="MT">Mato Grosso</option>
+                                    <option value="MS">Mato Grosso do Sul</option>
+                                    <option value="MG">Minas Gerais</option>
+                                    <option value="PA">Pará</option>
+                                    <option value="PB">Paraíba</option>
+                                    <option value="PR">Paraná</option>
+                                    <option value="PE">Pernambuco</option>
+                                    <option value="PI">Piauí</option>
+                                    <option value="RJ">Rio de Janeiro</option>
+                                    <option value="RN">Rio Grande do Norte</option>
+                                    <option value="RS">Rio Grande do Sul</option>
+                                    <option value="RO">Rondônia</option>
+                                    <option value="RR">Roraima</option>
+                                    <option value="SC">Santa Catarina</option>
+                                    <option value="SP">São Paulo</option>
+                                    <option value="SE">Sergipe</option>
+                                    <option value="TO">Tocantins</option>
+                                </TextField>
+                            </Grid>
+
                             <Grid size={{ xs: 12 }}>
                                 <FormControlLabel
                                     control={<Checkbox
@@ -274,7 +359,8 @@ const RegisterPage = () => {
                             </Grid>
                         </Grid>
 
-                        {/* Adição do loading no botão */}
+
+
                         <Button
                             onClick={handleRegister}
                             fullWidth
