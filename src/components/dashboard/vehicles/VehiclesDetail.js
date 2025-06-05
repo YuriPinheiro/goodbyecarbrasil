@@ -1,6 +1,5 @@
 import { useState, useRef } from "react";
 import { jsPDF } from "jspdf";
-import { saveAs } from 'file-saver';
 import {
   Dialog,
   DialogTitle,
@@ -26,7 +25,6 @@ import ProfileModal from "../../ProfileModal";
 
 const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view }) => {
   const [profileOpen, setProfileOpen] = useState(false);
-  const [error, setError] = useState("");
   const theme = useTheme();
   const modalRef = useRef(null);
 
@@ -267,15 +265,106 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
   };
 
 
-  const handleDownloadImage = async (imageUrl, imageName, vehicle) => {
+  const shareImagesNative = async (imageUrls) => {
     try {
+      // 1. Tentativa com API Web Share (nativa)
+      const blobs = await Promise.all(
+        imageUrls.map(url => fetch(url).then(res => res.blob()))
+      );
+
+      const files = blobs.map((blob, i) =>
+        new File([blob], `imagem_${i + 1}.jpg`, { type: 'image/jpeg' })
+      );
+
+      if (navigator.share && navigator.canShare?.({ files })) {
+        await navigator.share({
+          title: 'Fotos do Veículo',
+          files,
+        });
+        return;
+      }
+
+      // 2. Fallback para WhatsApp com Base64
+      await shareOnWhatsAppBase64(imageUrls);
+
+    } catch (error) {
+      console.error("Erro ao compartilhar:", error);
+      await shareOnWhatsAppBase64(imageUrls);
+    }
+  };
+
+  // Função específica para WhatsApp com Base64
+  const shareOnWhatsAppBase64 = async (imageUrls) => {
+    try {
+      // Converter todas as imagens para Base64
+      const base64Images = await Promise.all(
+        imageUrls.map(async (url) => {
+          const response = await fetch(url);
+          const blob = await response.blob();
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(blob);
+          });
+        })
+      );
+
+      // Para múltiplas imagens, precisamos enviar uma por uma
+      if (base64Images.length === 1) {
+        // Caso de uma única imagem
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent('Confira esta imagem:')}`;
+        window.open(whatsappUrl, '_blank');
+
+        // Não há maneira direta de anexar Base64 no WhatsApp Web,
+        // então mostramos a imagem em uma nova janela para o usuário salvar/compartilhar
+        const newWindow = window.open();
+        newWindow.document.write(`<img src="${base64Images[0]}" style="max-width: 100%;"/>`);
+      } else {
+        // Para múltiplas imagens
+        const newWindow = window.open();
+        newWindow.document.write(`
+        <h2>Fotos para compartilhar</h2>
+        <p>Salve as imagens e compartilhe manualmente pelo WhatsApp:</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          ${base64Images.map(img =>
+          `<img src="${img}" style="max-width: 100%; border: 1px solid #ccc;"/>`
+        ).join('')}
+        </div>
+      `);
+      }
+    } catch (error) {
+      console.error("Erro no fallback do WhatsApp:", error);
+      alert("Não foi possível compartilhar as imagens. Tente novamente mais tarde.");
+    }
+  };
+
+  const shareSingleImageToWhatsApp = async (imageUrl) => {
+    try {
+      // Converter para Base64
       const response = await fetch(imageUrl);
       const blob = await response.blob();
-      const filename = `${vehicle.brand?.nome}_${vehicle.model}_${imageName}.jpg` || 'veiculo.jpg';
+      const base64 = await new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+      });
 
-      saveAs(blob, filename);
+      // Criar link de download temporário
+      const link = document.createElement('a');
+      link.href = base64;
+      link.download = 'veiculo.jpg';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Abrir WhatsApp após um pequeno delay
+      setTimeout(() => {
+        window.open(`https://wa.me/?text=${encodeURIComponent('Confira a foto do veículo:')}`);
+      }, 500);
+
     } catch (error) {
-      setError(error.message)
+      console.error("Erro ao compartilhar:", error);
+      alert("Não foi possível compartilhar a imagem. Tente salvá-la e enviar manualmente.");
     }
   };
 
@@ -299,7 +388,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
         <Grid container justifyContent={'center'} sx={{ justifyContent: "center", alignItems: "center" }}>
           <Grid item size={11}>
             <Typography variant="h6" component="div" fontWeight="bold">
-              {vehicle?.brand?.nome} {vehicle.model} ({vehicle.year}){error}
+              {vehicle?.brand?.nome} {vehicle.model} ({vehicle.year})
             </Typography>
           </Grid>
           <Grid item size={1}>
@@ -540,7 +629,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
               />
               <Tooltip title="Baixar imagem">
                 <IconButton
-                  onClick={() => handleDownloadImage(vehicle.photos.front, 'frente', vehicle)}
+                  onClick={() => { shareImagesNative(photoTypes.map((type) => { return vehicle.photos[type.id] })) }}
                   sx={{
                     position: 'absolute',
                     bottom: 16,
@@ -604,7 +693,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
                       </Box>
                       <Tooltip title="Baixar imagem">
                         <IconButton
-                          onClick={() => handleDownloadImage(vehicle.photos[type.id], type.label.toLowerCase().replace(/\s+/g, '_'), vehicle)}
+                          onClick={() => { shareSingleImageToWhatsApp(vehicle.photos[type.id]) }}
                           sx={{
                             position: 'absolute',
                             top: 8,
