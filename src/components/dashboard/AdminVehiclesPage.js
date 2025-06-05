@@ -139,7 +139,7 @@ const AdminVehiclesPage = () => {
     }, [])
 
     useEffect(() => {
-  
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [users, vehicles])
 
@@ -290,7 +290,7 @@ const AdminVehiclesPage = () => {
     const confirmDeleteVehicle = () => {
         if (selectedVehicle) {
             let confirmation = deleteVehicle(selectedVehicle?.user?.id, selectedVehicle.id)
-            if(confirmation){
+            if (confirmation) {
                 setVehicles(vehicles.filter((v) => v.id !== selectedVehicle.id))
             }
             setDeleteModalOpen(false)
@@ -540,7 +540,7 @@ const AdminVehiclesPage = () => {
                             <Table stickyHeader aria-label="tabela de veículos">
                                 <TableHead>
                                     <TableRow>
-                                        {!isMobile && <TableCell sx={{ fontWeight: "bold" }}>Foto</TableCell>}
+                                        {!isMobile && <TableCell sx={{ fontWeight: "bold", width: '150px' }}>Foto</TableCell>}
                                         <TableCell sx={{ fontWeight: "bold" }}>Marca</TableCell>
                                         <TableCell sx={{ fontWeight: "bold" }}>Modelo</TableCell>
                                         <TableCell sx={{ fontWeight: "bold" }}>Ano</TableCell>
@@ -592,11 +592,11 @@ const AdminVehiclesPage = () => {
                                                         <TableCell>
 
                                                             <Button
-                                                            sx={{color: theme.palette.text.primary}}
+                                                                sx={{ color: theme.palette.text.primary }}
                                                                 onClick={() => { setProfileUser(vehicle?.user); setProfileOpen(true); }}
                                                             >
-                                                              
-                                                                    {vehicle?.user?.name || 'N/A'}
+
+                                                                {vehicle?.user?.name || 'N/A'}
                                                             </Button>
 
                                                         </TableCell>

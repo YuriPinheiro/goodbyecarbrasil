@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { jsPDF } from "jspdf";
 import {
   Dialog,
   DialogTitle,
@@ -35,15 +36,15 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
 
   const photoTypes = [
     { id: "front", label: "Frente", description: "Foto diretamente da frente do veículo" },
-    { id: "side", label: "Lateral", description: "Foto lateral do veículo (use também as diagonais)" },
-    { id: "back", label: "Traseira", description: "Foto diretamente da traseira do veículo" },
-    { id: "trunk", label: "Porta-malas", description: "Foto do porta-malas aberto" },
-    { id: "engine", label: "Motor", description: "Foto do compartimento do motor com o capô aberto" },
-    { id: "Km", label: "Quilometragem", description: "Foto do contador de quilometros do veículo" },
-    { id: "diagonalFrontLeft", label: "Diagonal frontal - lado 1", description: "Foto diagonal frontal do lado do motorista" },
     { id: "diagonalFrontRight", label: "Diagonal frontal - lado 2", description: "Foto diagonal frontal do lado do passageiro" },
-    { id: "diagonalRearLeft", label: "Diagonal traseira - lado 1", description: "Foto diagonal traseira do lado do motorista" },
+    { id: "side", label: "Lateral", description: "Foto lateral do veículo (use também as diagonais)" },
     { id: "diagonalRearRight", label: "Diagonal traseira - lado 2", description: "Foto diagonal traseira do lado do passageiro" },
+    { id: "back", label: "Traseira", description: "Foto diretamente da traseira do veículo" },
+    { id: "diagonalRearLeft", label: "Diagonal traseira - lado 1", description: "Foto diagonal traseira do lado do motorista" },
+    { id: "diagonalFrontLeft", label: "Diagonal frontal - lado 1", description: "Foto diagonal frontal do lado do motorista" },
+    { id: "engine", label: "Motor", description: "Foto do compartimento do motor com o capô aberto" },
+    { id: "trunk", label: "Porta-malas", description: "Foto do porta-malas aberto" },
+    { id: "Km", label: "Quilometragem", description: "Foto do contador de quilometros do veículo" },
     { id: "backSeat", label: "Banco traseiro", description: "Foto dos bancos traseiros do veículo" },
     { id: "damage1", label: "Avarias - Foto 1 (Opcional)", description: "Foto de avarias ou danos no veículo" },
     { id: "damage2", label: "Avarias - Foto 2 (Opcional)", description: "Foto de avarias ou danos no veículo" },
@@ -102,6 +103,167 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
     "regular": "Regular",
     "bad": "Ruim"
   };
+
+
+  const generateVehiclePDF = async (vehicle) => {
+    const doc = new jsPDF();
+    const mainColor = [24, 232, 219];
+
+    // Título principal
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.setTextColor(...mainColor);
+    doc.text("Ficha Técnica do Veículo", 105, 20, { align: "center" });
+
+    // Subtítulo
+    doc.setFontSize(16);
+    doc.setTextColor(33, 37, 41);
+    doc.text(
+      `${vehicle?.brand?.nome} ${vehicle.model} (${vehicle.year}/${vehicle.modelYear})`,
+      105,
+      30,
+      { align: "center" }
+    );
+
+    // Divider
+    doc.setDrawColor(...mainColor);
+    doc.setLineWidth(0.5);
+    doc.line(20, 35, 190, 35);
+
+    let y = 45;
+
+    // Seção: Informações Básicas
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...mainColor);
+    doc.text("Informações Básicas", 20, y);
+    y += 8;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    doc.setTextColor(33, 37, 41);
+    doc.text(`Placa: ${vehicle.plate}`, 20, y);
+    doc.text(`Quilometragem: ${vehicle.mileage} km`, 105, y);
+    y += 8;
+
+    doc.text(
+      `Tempo de posse: ${ownershipTimeMap[vehicle.ownershipTime] || vehicle.ownershipTime}`,
+      20,
+      y
+    );
+    y += 10;
+
+    // Divider
+    doc.setDrawColor(...mainColor);
+    doc.line(20, y, 190, y);
+    y += 5;
+
+    // // Seção: Estados do Veículo (agora com bolinhas coloridas)
+    // doc.setFont("helvetica", "bold");
+    // doc.setTextColor(...mainColor);
+    // doc.text("Estados do Veículo", 20, y);
+    // y += 8;
+
+    // doc.setFont("helvetica", "normal");
+    // doc.setTextColor(33, 37, 41);
+
+    // const getColorForCondition = (value) => {
+    //   const val = (value || "").toLowerCase();
+    //   if (val.includes("ótimo") || val.includes("excelente")) return [0, 200, 0]; // verde
+    //   if (val.includes("bom")) return [255, 165, 0]; // amarelo
+    //   return [255, 0, 0]; // vermelho
+    // };
+
+    // const drawConditionItem = (label, value, x, y) => {
+    //   const text = `${label}: ${conditionMap[value] || "Não informado"}`;
+    //   const color = getColorForCondition(conditionMap[value] || "");
+
+    //   // Desenha bolinha colorida (círculo preenchido)
+    //   doc.setFillColor(...color);
+    //   doc.circle(x, y - 1.5, 2, 'F');
+
+    //   doc.text(text, x + 5, y);
+    // };
+
+    // // Esquerda
+    // drawConditionItem("Pintura", vehicle.paintCondition, 20, y);
+    // drawConditionItem("Interior", vehicle.interiorCondition, 20, y + 8);
+
+    // // Direita
+    // drawConditionItem("Mecânica", vehicle.mechanicalCondition, 105, y);
+    // drawConditionItem("Pneus", vehicle.tiresCondition, 105, y + 8);
+
+    // y += 18;
+
+    // // Divider
+    // doc.setDrawColor(...mainColor);
+    // doc.line(20, y, 190, y);
+    y += 5;
+
+    // Seção: Itens do Veículo (agora com quadradinhos pretos)
+    if (vehicle.items?.length > 0) {
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(...mainColor);
+      doc.text("Itens do Veículo", 20, y);
+      y += 8;
+
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(33, 37, 41);
+
+      const drawItemSquare = (x, y) => {
+        doc.setFillColor(0, 0, 0); // Preto
+        doc.rect(x, y - 3, 3, 3, 'F'); // Quadrado 3x3mm
+      };
+
+      const itemsList = vehicle.items.map(
+        item => `${vehicleItems[item]?.label || item}`
+      );
+
+      const midPoint = Math.ceil(itemsList.length / 2);
+      const left = itemsList.slice(0, midPoint);
+      const right = itemsList.slice(midPoint);
+
+      // Itens da esquerda com quadradinhos
+      left.forEach((item, i) => {
+        drawItemSquare(20, y + i * 7);
+        doc.text(item, 25, y + i * 7);
+      });
+
+      // Itens da direita com quadradinhos
+      right.forEach((item, i) => {
+        drawItemSquare(105, y + i * 7);
+        doc.text(item, 110, y + i * 7);
+      });
+
+      y += Math.max(left.length, right.length) * 7 + 5;
+
+      // Divider
+      doc.setDrawColor(...mainColor);
+      doc.line(20, y, 190, y);
+      y += 5;
+    }
+
+    // Seção: Descrição Adicional
+    if (vehicle.description) {
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(...mainColor);
+      doc.text("Descrição Adicional", 20, y);
+      y += 8;
+
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(33, 37, 41);
+      const lines = doc.splitTextToSize(vehicle.description, 170);
+      doc.text(lines, 20, y);
+      y += lines.length * 7;
+    }
+
+    // Rodapé
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text(`Documento gerado em: ${new Date().toLocaleString("pt-BR")}`, 20, 280);
+
+    doc.save(`Ficha_${vehicle?.brand?.nome}_${vehicle.model}_${vehicle.plate}.pdf`);
+  };
+
 
   // Função para baixar imagem
   const handleDownloadImage = (imageUrl, imageName) => {
@@ -477,18 +639,15 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
         >
           Excluir
         </Button>
-        {/* Novo botão de compartilhar */}
-        {/* {view &&
+        {view &&
           <Button
-            startIcon={<ShareIcon />}
-            onClick={handleShare}
-            sx={{
-              color: theme.palette.primary.main,
-            }}
+            startIcon={<DownloadIcon />}
+            onClick={() => generateVehiclePDF(vehicle)}
+            sx={{ color: "primary.main" }}
           >
-            Compartilhar
+            PDF
           </Button>
-        } */}
+        }
         <Button
           onClick={onClose}
           sx={{
