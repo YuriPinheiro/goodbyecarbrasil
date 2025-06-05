@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { jsPDF } from "jspdf";
+import { saveAs } from 'file-saver';
 import {
   Dialog,
   DialogTitle,
@@ -25,6 +26,7 @@ import ProfileModal from "../../ProfileModal";
 
 const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view }) => {
   const [profileOpen, setProfileOpen] = useState(false);
+  const [error, setError] = useState("");
   const theme = useTheme();
   const modalRef = useRef(null);
 
@@ -265,20 +267,16 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
   };
 
 
-  // Função para baixar imagem
-  const handleDownloadImage = (imageUrl, imageName) => {
-    fetch(imageUrl)
-      .then(response => response.blob())
-      .then(blob => {
-        const url = window.URL.createObjectURL(new Blob([blob]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `${vehicle.brand?.nome}_${vehicle.model}_${imageName}.jpg`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      });
+  const handleDownloadImage = async (imageUrl, imageName, vehicle) => {
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const filename = `${vehicle.brand?.nome}_${vehicle.model}_${imageName}.jpg` || 'veiculo.jpg';
+
+      saveAs(blob, filename);
+    } catch (error) {
+      setError(error.message)
+    }
   };
 
   return (
@@ -301,7 +299,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
         <Grid container justifyContent={'center'} sx={{ justifyContent: "center", alignItems: "center" }}>
           <Grid item size={11}>
             <Typography variant="h6" component="div" fontWeight="bold">
-              {vehicle?.brand?.nome} {vehicle.model} ({vehicle.year})
+              {vehicle?.brand?.nome} {vehicle.model} ({vehicle.year}){error}
             </Typography>
           </Grid>
           <Grid item size={1}>
@@ -542,7 +540,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
               />
               <Tooltip title="Baixar imagem">
                 <IconButton
-                  onClick={() => handleDownloadImage(vehicle.photos.front, 'frente')}
+                  onClick={() => handleDownloadImage(vehicle.photos.front, 'frente', vehicle)}
                   sx={{
                     position: 'absolute',
                     bottom: 16,
@@ -606,7 +604,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
                       </Box>
                       <Tooltip title="Baixar imagem">
                         <IconButton
-                          onClick={() => handleDownloadImage(vehicle.photos[type.id], type.label.toLowerCase().replace(/\s+/g, '_'))}
+                          onClick={() => handleDownloadImage(vehicle.photos[type.id], type.label.toLowerCase().replace(/\s+/g, '_'), vehicle)}
                           sx={{
                             position: 'absolute',
                             top: 8,
