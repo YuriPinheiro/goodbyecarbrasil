@@ -24,6 +24,8 @@ import {
     CircularProgress,
     useMediaQuery,
     Menu,
+    Alert,
+    Snackbar,
 } from "@mui/material"
 import Grid from "@mui/material/Grid2"
 import {
@@ -61,6 +63,8 @@ const AdminVehiclesPage = () => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false)
     const [selectedVehicle, setSelectedVehicle] = useState(null)
     const [isEditing, setIsEditing] = useState(false)
+    const [feedbackAlert, setFeedbackAlert] = useState(null);
+
 
     // Estados para filtros
     const [searchTerm, setSearchTerm] = useState("")
@@ -358,6 +362,10 @@ const AdminVehiclesPage = () => {
         const formattedDate = date.toLocaleDateString('pt-BR');
 
         return formattedDate;
+    }
+
+    const onFeedback = (feedback) => {
+        setFeedbackAlert(feedback);
     }
 
     return (
@@ -668,7 +676,9 @@ const AdminVehiclesPage = () => {
             <VehicleFormModal
                 open={formModalOpen}
                 onClose={() => setFormModalOpen(false)}
+                onFeedback={onFeedback}
                 onSave={handleSaveVehicle}
+                view
                 vehicle={isEditing ? selectedVehicle : null}
                 isEditing={isEditing}
             />
@@ -698,7 +708,19 @@ const AdminVehiclesPage = () => {
             />
 
             <ProfileModal open={profileOpen} onClose={() => { setProfileOpen(false); setProfileUser(null); }} userProvider={{ ...profileUser, uid: profileUser?.id }} mode={'view'} />
-
+            
+            <Snackbar
+                open={Boolean(feedbackAlert)}
+                autoHideDuration={3000}
+                onClose={() => {
+                    setFeedbackAlert(null);
+                }}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert severity={feedbackAlert?.severity}>
+                    {feedbackAlert?.text}
+                </Alert>
+            </Snackbar>
         </Box>
     )
 }

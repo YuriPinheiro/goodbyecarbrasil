@@ -108,11 +108,72 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
     const doc = new jsPDF();
     const mainColor = [24, 232, 219];
 
-    // Título principal
+    // Variável Y ajustável para posicionamento vertical
+    let y = 15; // Começa com 15mm de margem superior
+
+    // const logoUrl = '/logoPDF.png';
+    // let logoBase64 = null;
+
+    // try {
+    //   const response = await fetch(logoUrl);
+    //   const blob = await response.blob();
+    //   logoBase64 = await new Promise((resolve) => {
+    //     const reader = new FileReader();
+    //     reader.onloadend = () => resolve(reader.result);
+    //     reader.readAsDataURL(blob);
+    //   });
+    // } catch (error) {
+    //   console.error('Erro ao carregar o logo:', error);
+    // }
+
+    // // Cabeçalho com logo centralizado
+    // if (logoBase64) {
+    //   const logoWidth = 70;
+    //   const logoHeight = 30;
+    //   const pageWidth = doc.internal.pageSize.getWidth();
+    //   const logoX = (pageWidth - logoWidth) / 2; // Centraliza horizontalmente
+
+    //   // Adiciona o logo
+    //   doc.addImage({
+    //     imageData: logoBase64,
+    //     x: logoX,
+    //     y: y, // Usa a posição Y atual
+    //     width: logoWidth,
+    //     height: logoHeight,
+    //     format: 'PNG'
+    //   });
+
+    //   y += logoHeight + 10; // Incrementa Y para posicionar o título abaixo
+    // }
+
+    // Após o título principal e antes do subtítulo do veículo
+    doc.setFont("helvetica", "bold");
+
+    // Configurações para "Goodbye" (azul mais escuro)
+    doc.setTextColor(10, 150, 180); // Azul mais escuro
+    doc.setFontSize(22); // Um pouco maior que o título
+    doc.text("Goodbye", 95, y, { align: "center" });
+
+    // Configurações para "Car" (laranja)
+    doc.setTextColor(255, 128, 0); // Laranja
+    doc.text("Car", 95 + doc.getTextWidth("Goodbye ") / 2, y);
+
+    y += 10;
+
+    // Configurações para "Brasil" (preto)
+    doc.setTextColor(0, 0, 0); // Preto
+    doc.text("Brasil", 78 + doc.getTextWidth("Goodbye Car ") / 2, y, { align: "center" });
+
+    // Espaçamento após o texto
+    y += 15; // Incrementa Y para o próximo elemento
+
+
+    // Título principal (centralizado abaixo do logo)
     doc.setFont("helvetica", "bold");
     doc.setFontSize(20);
     doc.setTextColor(...mainColor);
-    doc.text("Ficha Técnica do Veículo", 105, 20, { align: "center" });
+    doc.text("Ficha Técnica do Veículo", 105, y, { align: "center" });
+    y += 10; // Incrementa Y para o subtítulo
 
     // Subtítulo
     doc.setFontSize(16);
@@ -120,16 +181,16 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
     doc.text(
       `${vehicle?.brand?.nome} ${vehicle.model} (${vehicle.year}/${vehicle.modelYear})`,
       105,
-      30,
+      y,
       { align: "center" }
     );
+    y += 10; // Incrementa Y para a linha divisória
 
     // Divider
     doc.setDrawColor(...mainColor);
     doc.setLineWidth(0.5);
-    doc.line(20, 35, 190, 35);
-
-    let y = 45;
+    doc.line(20, y, 190, y);
+    y += 10; // Incrementa Y para a próxima seção
 
     // Seção: Informações Básicas
     doc.setFont("helvetica", "bold");
@@ -149,6 +210,11 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
       20,
       y
     );
+
+    y += 8;
+    doc.text(`Chave Reserva: ${vehicle.hasSpareKey}`, 20, y);
+    doc.text(`Manual de fábrica: ${vehicle.hasManual}`, 105, y);
+
     y += 10;
 
     // Divider
@@ -156,49 +222,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
     doc.line(20, y, 190, y);
     y += 5;
 
-    // // Seção: Estados do Veículo (agora com bolinhas coloridas)
-    // doc.setFont("helvetica", "bold");
-    // doc.setTextColor(...mainColor);
-    // doc.text("Estados do Veículo", 20, y);
-    // y += 8;
-
-    // doc.setFont("helvetica", "normal");
-    // doc.setTextColor(33, 37, 41);
-
-    // const getColorForCondition = (value) => {
-    //   const val = (value || "").toLowerCase();
-    //   if (val.includes("ótimo") || val.includes("excelente")) return [0, 200, 0]; // verde
-    //   if (val.includes("bom")) return [255, 165, 0]; // amarelo
-    //   return [255, 0, 0]; // vermelho
-    // };
-
-    // const drawConditionItem = (label, value, x, y) => {
-    //   const text = `${label}: ${conditionMap[value] || "Não informado"}`;
-    //   const color = getColorForCondition(conditionMap[value] || "");
-
-    //   // Desenha bolinha colorida (círculo preenchido)
-    //   doc.setFillColor(...color);
-    //   doc.circle(x, y - 1.5, 2, 'F');
-
-    //   doc.text(text, x + 5, y);
-    // };
-
-    // // Esquerda
-    // drawConditionItem("Pintura", vehicle.paintCondition, 20, y);
-    // drawConditionItem("Interior", vehicle.interiorCondition, 20, y + 8);
-
-    // // Direita
-    // drawConditionItem("Mecânica", vehicle.mechanicalCondition, 105, y);
-    // drawConditionItem("Pneus", vehicle.tiresCondition, 105, y + 8);
-
-    // y += 18;
-
-    // // Divider
-    // doc.setDrawColor(...mainColor);
-    // doc.line(20, y, 190, y);
-    y += 5;
-
-    // Seção: Itens do Veículo (agora com quadradinhos pretos)
+    // Seção: Itens do Veículo
     if (vehicle.items?.length > 0) {
       doc.setFont("helvetica", "bold");
       doc.setTextColor(...mainColor);
@@ -209,8 +233,8 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
       doc.setTextColor(33, 37, 41);
 
       const drawItemSquare = (x, y) => {
-        doc.setFillColor(0, 0, 0); // Preto
-        doc.rect(x, y - 3, 3, 3, 'F'); // Quadrado 3x3mm
+        doc.setFillColor(0, 0, 0);
+        doc.rect(x, y - 3, 3, 3, 'F');
       };
 
       const itemsList = vehicle.items.map(
@@ -221,13 +245,11 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
       const left = itemsList.slice(0, midPoint);
       const right = itemsList.slice(midPoint);
 
-      // Itens da esquerda com quadradinhos
       left.forEach((item, i) => {
         drawItemSquare(20, y + i * 7);
         doc.text(item, 25, y + i * 7);
       });
 
-      // Itens da direita com quadradinhos
       right.forEach((item, i) => {
         drawItemSquare(105, y + i * 7);
         doc.text(item, 110, y + i * 7);
@@ -235,9 +257,35 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
 
       y += Math.max(left.length, right.length) * 7 + 5;
 
-      // Divider
       doc.setDrawColor(...mainColor);
       doc.line(20, y, 190, y);
+      y += 5;
+    }
+
+    // Seção: Cotações
+    if (vehicle.fipeValue && vehicle.askingPrice) {
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(...mainColor);
+      doc.text("Cotações", 20, y);
+      y += 8;
+
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(33, 37, 41);
+
+      const fipeFormatted = `Valor FIPE: R$ ${vehicle.fipeValue}`;
+      const askingFormatted = `Pedida: R$ ${vehicle.askingPrice}`;
+
+      doc.setFillColor(240, 240, 240); // fundo cinza claro para destaque
+      doc.rect(20, y - 6, 170, 16, 'F'); // caixa de fundo
+
+      doc.text(fipeFormatted, 25, y);
+      doc.text(askingFormatted, 25, y + 7);
+
+      y += 16; // espaço após seção
+
+      doc.setDrawColor(...mainColor);
+      doc.line(20, y, 190, y);
+
       y += 5;
     }
 
@@ -255,6 +303,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
       y += lines.length * 7;
     }
 
+
     // Rodapé
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
@@ -268,7 +317,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="lg" // Aumentei para lg para melhor visualização das fotos
+      maxWidth="lg"
       fullWidth
       PaperProps={{
         sx: {
@@ -393,7 +442,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
           </Grid>
 
           {/* NOVA SEÇÃO: ESTADOS DO VEÍCULO */}
-          <Grid item xs={12}>
+          <Grid item size={12}>
             <Divider sx={{ my: 1 }} />
             <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
               Estados do Veículo
@@ -439,8 +488,60 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
                   </Typography>
                 </Box>
               </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
+                  <Typography variant="subtitle2" color="text.primary">
+                    Chave Reserva
+                  </Typography>
+                  <Typography variant="body1" fontWeight="medium">
+                    {vehicle.hasSpareKey || "Não informado"}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
+                  <Typography variant="subtitle2" color="text.primary">
+                    Manual de fábrica
+                  </Typography>
+                  <Typography variant="body1" fontWeight="medium">
+                    {vehicle.hasManual || "Não informado"}
+                  </Typography>
+                </Box>
+              </Grid>
             </Grid>
           </Grid>
+
+          {/* {Cotação do viculo} */}
+          {view &&
+            <Grid size={12}>
+              <Divider sx={{ my: 1 }} />
+              <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                Cotações
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
+                    <Typography variant="subtitle2" color="text.primary">
+                      Valor fipe
+                    </Typography>
+                    <Typography variant="body1" fontWeight="medium">
+                      {vehicle.fipeValue || "Não informado"}
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
+                    <Typography variant="subtitle2" color="text.primary">
+                      Valor pedido
+                    </Typography>
+                    <Typography variant="body1" fontWeight="medium">
+                      {vehicle.askingPrice || "Não informado"}
+                    </Typography>
+                  </Box>
+                </Grid>
+              </Grid>
+            </Grid>
+          }
 
           {vehicle.user && (
             <Grid size={{ xs: 12 }}>
