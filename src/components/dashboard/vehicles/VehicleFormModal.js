@@ -1064,7 +1064,7 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
             ) : (
               <Box sx={{ position: 'relative', zIndex: 2, width: '100%' }}>
                 {uploadProgress[type.id] ? (
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', zIndex: 99 }}>
                     <CircularProgress
                       variant="determinate"
                       value={uploadProgress[type.id]}
@@ -1189,15 +1189,15 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
             {errorMessage}
           </Alert>
         )}
-
         <Stepper activeStep={activeStep} orientation="horizontal" sx={{ mb: 3 }}>
           {steps.map((label, index) => (
             <Step key={label}>
-              <StepLabel>{label}</StepLabel>
+              <StepLabel sx={{ '& .MuiStepLabel-label': { color: 'black' } }}>
+                {label}
+              </StepLabel>
             </Step>
           ))}
         </Stepper>
-
         <Box sx={{ height: '100%', overflowY: 'auto' }}>
           {activeStep === 0 && renderStep1()}
           {activeStep === 1 && renderStep2()}
