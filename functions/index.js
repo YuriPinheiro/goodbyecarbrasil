@@ -1,63 +1,48 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * const {onCall} = require("firebase-functions/v2/https");
- * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
-
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
-
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
-
-const functions = require("firebase-functions");
+const {onDocumentCreated} = require("firebase-functions/v2/firestore");
 const admin = require("firebase-admin");
-admin.initializeApp();
 const sgMail = require("@sendgrid/mail");
 
-// Configuração do SendGrid (substitua pela sua API Key)
-sgMail.setApiKey("SUA_API_KEY_DO_SENDGRID");
+admin.initializeApp();
 
-// E-mail do admin (fixo)
-const ADMIN_EMAIL = "admin@email.com"; // Substitua pelo e-mail do admin
+// Configura a chave do SendGrid (substitua pela sua chave)
+sgMail.setApiKey(process.env.SENDGRIDAPIKEY);
 
-exports.notifyAdminNewVehicle = functions.firestore
-    .document("vehicles/{vehicleId}")
-    .onCreate(async (snap, context) => {
-        const vehicleData = snap.data(); // Dados do veículo
-        const userId = vehicleData.userId; // ID do usuário que cadastrou
+exports.notifyNewVehicle =
+    onDocumentCreated("vehicles/{vehicleId}", async (event) => {
+      const snapshot = event.data;
+      const veiculo = snapshot.data();
 
-        try {
-            // 1. Buscar dados do usuário no Firestore
-            const userDoc = await admin.firestore().collection("users").doc(userId).get();
-            const userData = userDoc.data();
+      const msg = {
+        to: "goodbyecarbrasil@gmail.com", // Email do administrador
+        from: "no-reply@em8020.goodbyecar.com.br", // Email do remetente
+        subject: "Novo Veículo Cadastrado",
+        text: `Um novo veículo foi cadastrado no sistema:
+          
+        Marca: ${veiculo.brand.nome || "Não informado"}
+        Modelo: ${veiculo.model || "Não informado"}
+        Ano: ${veiculo.year}/${veiculo.modelYear || "Não informado"}
+        Placa: ${veiculo.plate || "Não informado"}
+          
+        Data do cadastro: ${new Date().toLocaleString()}
+      `,
+        html: `<strong>Um novo veículo foi cadastrado no sistema:</strong>
+          <ul>
+              <li>Marca: ${veiculo.brand.nome || "Não informado"}</li>
+              <li>Modelo: ${veiculo.model || "Não informado"}</li>
+              <li>Ano: ${veiculo.year}/${veiculo.modelYear || "---"}</li>
+              <li>Placa: ${veiculo.plate || "Não informado"}</li>
+          </ul>
+          <p>Data do cadastro: ${new Date().toLocaleString()}</p>
+      `,
+      };
 
-            // 2. Preparar o e-mail
-            const msg = {
-                to: ADMIN_EMAIL,
-                from: "notificacoes@seudominio.com", // E-mail verificado no SendGrid
-                subject: `🚗 Novo veículo cadastrado: ${vehicleData.model}`,
-                html: `
-                    <h2>Um novo veículo foi cadastrado!</h2>
-                    <p><strong>Usuário:</strong> ${userData.name} (${userData.email})</p>
-                    <p><strong>Modelo:</strong> ${vehicleData.model}</p>
-                    <p><strong>Ano:</strong> ${vehicleData.year}</p>
-                    <p><strong>Placa:</strong> ${vehicleData.plate}</p>
-                    <p><strong>Quilometragem:</strong> ${vehicleData.mileage} km</p>
-                    <p><strong>Descrição:</strong> ${vehicleData.description}</p>
-                    <p>Acesse o painel para mais detalhes.</p>
-                `,
-            };
-
-            // 3. Enviar o e-mail
-            await sgMail.send(msg);
-            console.log("E-mail enviado para o admin!");
-        } catch (error) {
-            console.error("Erro ao enviar notificação:", error);
+      try {
+        await sgMail.send(msg);
+        console.log("Email enviado com sucesso");
+      } catch (error) {
+        console.error("Erro ao enviar email:", error);
+        if (error.response) {
+          console.error(error.response.body);
         }
+      }
     });
