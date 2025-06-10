@@ -107,92 +107,84 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
   const generateVehiclePDF = async (vehicle) => {
     const doc = new jsPDF();
     const mainColor = [24, 232, 219];
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 20;
+    let y = 15; // Posição vertical inicial
 
-    // Variável Y ajustável para posicionamento vertical
-    let y = 15; // Começa com 15mm de margem superior
+    // Função para adicionar nova página quando necessário
+    const checkPageBreak = (requiredHeight) => {
+      if (y + requiredHeight > pageHeight - margin) {
+        doc.addPage();
+        y = 15; // Reset Y position for new page
+        addHeader(); // Adiciona cabeçalho na nova página
+        return true;
+      }
+      return false;
+    };
 
-    const logoUrl = '/logoPDF.png';
-    let logoBase64 = null;
+    // Função para adicionar cabeçalho (reutilizável em todas as páginas)
+    const addHeader = async () => {
+      const logoUrl = '/logoPDF.png';
+      let logoBase64 = null;
 
-    try {
-      const response = await fetch(logoUrl);
-      const blob = await response.blob();
-      logoBase64 = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.readAsDataURL(blob);
-      });
-    } catch (error) {
-      console.error('Erro ao carregar o logo:', error);
-    }
+      try {
+        const response = await fetch(logoUrl);
+        const blob = await response.blob();
+        logoBase64 = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(blob);
+        });
+      } catch (error) {
+        console.error('Erro ao carregar o logo:', error);
+      }
 
-    // Cabeçalho com logo centralizado
-    if (logoBase64) {
-      const logoWidth = 70;
-      const logoHeight = 30;
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const logoX = (pageWidth - logoWidth) / 2; // Centraliza horizontalmente
+      if (logoBase64) {
+        const logoWidth = 70;
+        const logoHeight = 30;
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const logoX = (pageWidth - logoWidth) / 2;
 
-      // Adiciona o logo
-      doc.addImage({
-        imageData: logoBase64,
-        x: logoX,
-        y: y, // Usa a posição Y atual
-        width: logoWidth,
-        height: logoHeight,
-        format: 'PNG'
-      });
+        doc.addImage({
+          imageData: logoBase64,
+          x: logoX,
+          y: y,
+          width: logoWidth,
+          height: logoHeight,
+          format: 'PNG'
+        });
 
-      y += logoHeight + 10; // Incrementa Y para posicionar o título abaixo
-    }
+        y += logoHeight + 10;
+      }
 
-    // // Após o título principal e antes do subtítulo do veículo
-    // doc.setFont("helvetica", "bold");
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(20);
+      doc.setTextColor(...mainColor);
+      doc.text("Ficha Técnica do Veículo", 105, y, { align: "center" });
+      y += 10;
 
-    // // Configurações para "Goodbye" (azul mais escuro)
-    // doc.setTextColor(10, 150, 180); // Azul mais escuro
-    // doc.setFontSize(22); // Um pouco maior que o título
-    // doc.text("Goodbye", 95, y, { align: "center" });
+      doc.setFontSize(16);
+      doc.setTextColor(33, 37, 41);
+      doc.text(
+        `${vehicle?.brand?.nome} ${vehicle.model} (${vehicle.year}/${vehicle.modelYear})`,
+        105,
+        y,
+        { align: "center" }
+      );
+      y += 10;
 
-    // // Configurações para "Car" (laranja)
-    // doc.setTextColor(255, 128, 0); // Laranja
-    // doc.text("Car", 95 + doc.getTextWidth("Goodbye ") / 2, y);
+      doc.setDrawColor(...mainColor);
+      doc.setLineWidth(0.5);
+      doc.line(20, y, 190, y);
+      y += 10;
+    };
 
-    // y += 10;
+    // Adiciona o cabeçalho inicial
+    await addHeader();
 
-    // // Configurações para "Brasil" (preto)
-    // doc.setTextColor(0, 0, 0); // Preto
-    // doc.text("Brasil", 78 + doc.getTextWidth("Goodbye Car ") / 2, y, { align: "center" });
+    // Seção: Informações Básicas (código existente, mas com verificação de quebra de página)
+    checkPageBreak(30); // Verifica espaço para esta seção
 
-    // Espaçamento após o texto
-    // y += 15; // Incrementa Y para o próximo elemento
-
-
-    // Título principal (centralizado abaixo do logo)
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(20);
-    doc.setTextColor(...mainColor);
-    doc.text("Ficha Técnica do Veículo", 105, y, { align: "center" });
-    y += 10; // Incrementa Y para o subtítulo
-
-    // Subtítulo
-    doc.setFontSize(16);
-    doc.setTextColor(33, 37, 41);
-    doc.text(
-      `${vehicle?.brand?.nome} ${vehicle.model} (${vehicle.year}/${vehicle.modelYear})`,
-      105,
-      y,
-      { align: "center" }
-    );
-    y += 10; // Incrementa Y para a linha divisória
-
-    // Divider
-    doc.setDrawColor(...mainColor);
-    doc.setLineWidth(0.5);
-    doc.line(20, y, 190, y);
-    y += 10; // Incrementa Y para a próxima seção
-
-    // Seção: Informações Básicas
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...mainColor);
     doc.text("Informações Básicas", 20, y);
@@ -216,13 +208,13 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
     doc.text(`Manual de fábrica: ${vehicle.hasManual}`, 105, y);
 
     y += 10;
-
-    // Divider
     doc.setDrawColor(...mainColor);
     doc.line(20, y, 190, y);
     y += 5;
 
-    // Seção: Estados do Veículo (agora com bolinhas coloridas)
+    // Seção: Estados do Veículo (com verificação de quebra)
+    checkPageBreak(30);
+
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...mainColor);
     doc.text("Estados do Veículo", 20, y);
@@ -233,39 +225,33 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
 
     const getColorForCondition = (value) => {
       const val = (value || "").toLowerCase();
-      if (val.includes("bom") || val.includes("excelente")) return [0, 200, 0]; // verde
-      if (val.includes("regular")) return [255, 165, 0]; // amarelo
-      return [255, 0, 0]; // vermelho
+      if (val.includes("bom") || val.includes("excelente")) return [0, 200, 0];
+      if (val.includes("regular")) return [255, 165, 0];
+      return [255, 0, 0];
     };
 
     const drawConditionItem = (label, value, x, y) => {
       const text = `${label}: ${conditionMap[value] || "Não informado"}`;
       const color = getColorForCondition(conditionMap[value] || "");
 
-      // Desenha bolinha colorida (círculo preenchido)
       doc.setFillColor(...color);
       doc.circle(x, y - 1.5, 2, 'F');
-
       doc.text(text, x + 5, y);
     };
 
-    // Esquerda
     drawConditionItem("Pintura", vehicle.paintCondition, 20, y);
     drawConditionItem("Interior", vehicle.interiorCondition, 20, y + 8);
-
-    // Direita
     drawConditionItem("Pneus", vehicle.tiresCondition, 105, y);
-
     y += 18;
 
-    // Divider
     doc.setDrawColor(...mainColor);
     doc.line(20, y, 190, y);
-
     y += 5;
 
-    // Seção: Itens do Veículo
+    // Seção: Itens do Veículo (com layout de 2 colunas corretamente alinhadas)
     if (vehicle.items?.length > 0) {
+      checkPageBreak(20); // Verifica espaço para o título
+
       doc.setFont("helvetica", "bold");
       doc.setTextColor(...mainColor);
       doc.text("Itens do Veículo", 20, y);
@@ -283,29 +269,50 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
         item => `${vehicleItems[item]?.label || item}`
       );
 
-      const midPoint = Math.ceil(itemsList.length / 2);
-      const left = itemsList.slice(0, midPoint);
-      const right = itemsList.slice(midPoint);
+      // Largura das colunas
+      const colWidth = 85; // Largura de cada coluna
+      const startX1 = 20; // Posição X da primeira coluna
+      const startX2 = startX1 + colWidth; // Posição X da segunda coluna
 
-      left.forEach((item, i) => {
-        drawItemSquare(20, y + i * 7);
-        doc.text(item, 25, y + i * 7);
-      });
+      // Adiciona os itens em pares (2 por linha)
+      for (let i = 0; i < itemsList.length; i += 2) {
+        // Verifica se há espaço para mais uma linha
+        if (y + 7 > pageHeight - margin) {
+          doc.addPage();
+          y = 15;
+          addHeader();
+          // Repete o título se necessário
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(...mainColor);
+          doc.text("Itens do Veículo (continuação)", 20, y);
+          y += 8;
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(33, 37, 41);
+        }
 
-      right.forEach((item, i) => {
-        drawItemSquare(105, y + i * 7);
-        doc.text(item, 110, y + i * 7);
-      });
+        // Primeiro item da linha (coluna esquerda)
+        drawItemSquare(startX1, y);
+        doc.text(itemsList[i], startX1 + 5, y);
 
-      y += Math.max(left.length, right.length) * 7 + 5;
+        // Segundo item da linha (coluna direita) - se existir
+        if (i + 1 < itemsList.length) {
+          drawItemSquare(startX2, y);
+          doc.text(itemsList[i + 1], startX2 + 5, y);
+        }
 
+        y += 7; // Move para a próxima linha
+      }
+
+      y += 5;
       doc.setDrawColor(...mainColor);
       doc.line(20, y, 190, y);
       y += 5;
     }
 
-    // Seção: Cotações
+    // Seção: Cotações (com verificação de espaço)
     if (vehicle.fipeValue && vehicle.askingPrice) {
+      checkPageBreak(30);
+
       doc.setFont("helvetica", "bold");
       doc.setTextColor(...mainColor);
       doc.text("Cotações", 20, y);
@@ -317,26 +324,25 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
       const fipeFormatted = `Valor FIPE: R$ ${vehicle.fipeValue}`;
       const askingFormatted = `Pedida: R$ ${vehicle.askingPrice}`;
 
-      doc.setFillColor(240, 240, 240); // fundo cinza claro para destaque
-      doc.rect(20, y - 6, 170, 24, 'F'); // caixa de fundo aumentada para 24 de altura
+      doc.setFillColor(240, 240, 240);
+      doc.rect(20, y - 6, 170, 24, 'F');
 
       doc.text(fipeFormatted, 25, y);
       doc.text(askingFormatted, 25, y + 7);
+      doc.setFont("helvetica", "bold");
+      doc.text("Aceitamos contra oferta!", 25, y + 16);
+      doc.setFont("helvetica", "normal");
 
-      doc.setFont("helvetica", "bold"); // muda para negrito
-      doc.text("Aceitamos contra oferta!", 25, y + 16); // posição ajustada
-      doc.setFont("helvetica", "normal"); // volta ao normal
-
-      y += 22; // espaço aumentado após seção
-
+      y += 22;
       doc.setDrawColor(...mainColor);
       doc.line(20, y, 190, y);
-
       y += 5;
     }
 
-    // Seção: Descrição Adicional
+    // Seção: Descrição Adicional (com paginação automática)
     if (vehicle.description) {
+      checkPageBreak(20);
+
       doc.setFont("helvetica", "bold");
       doc.setTextColor(...mainColor);
       doc.text("Descrição Adicional", 20, y);
@@ -345,15 +351,34 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
       doc.setFont("helvetica", "normal");
       doc.setTextColor(33, 37, 41);
       const lines = doc.splitTextToSize(vehicle.description, 170);
-      doc.text(lines, 20, y);
-      y += lines.length * 7;
+
+      for (let i = 0; i < lines.length; i++) {
+        if (y + 7 > pageHeight - margin) {
+          doc.addPage();
+          y = 15;
+          addHeader(); // Adiciona cabeçalho na nova página
+          // Repete o título se necessário
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(...mainColor);
+          doc.text("Descrição Adicional (continuação)", 20, y);
+          y += 8;
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(33, 37, 41);
+        }
+        doc.text(lines[i], 20, y);
+        y += 7;
+      }
     }
 
-
-    // Rodapé
-    doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    doc.text(`Documento gerado em: ${new Date().toLocaleString("pt-BR")}`, 20, 280);
+    // Adiciona rodapé em todas as páginas
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Documento gerado em: ${new Date().toLocaleString("pt-BR")}`, 20, 280);
+      doc.text(`Página ${i} de ${pageCount}`, 180, 280, { align: "right" });
+    }
 
     doc.save(`Ficha_${vehicle?.brand?.nome}_${vehicle.model}_${vehicle.plate}.pdf`);
   };

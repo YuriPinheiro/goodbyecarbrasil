@@ -13,8 +13,7 @@ import {
 } from '@mui/material';
 
 import {
-    Menu as MenuIcon,
-    DirectionsCar as CarIcon
+    Menu as MenuIcon
 } from '@mui/icons-material';
 
 import useStyles from '../styles/components/AppHeader';

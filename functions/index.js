@@ -23,7 +23,7 @@ exports.notifyNewVehicle =
         Ano: ${veiculo.year}/${veiculo.modelYear || "Não informado"}
         Placa: ${veiculo.plate || "Não informado"}
           
-        Data do cadastro: ${new Date().toLocaleString()}
+        Data do cadastro: ${new Date().toLocaleString('pt-BR')}
       `,
         html: `<strong>Um novo veículo foi cadastrado no sistema:</strong>
           <ul>
