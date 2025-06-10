@@ -111,61 +111,61 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
     // Variável Y ajustável para posicionamento vertical
     let y = 15; // Começa com 15mm de margem superior
 
-    // const logoUrl = '/logoPDF.png';
-    // let logoBase64 = null;
+    const logoUrl = '/logoPDF.png';
+    let logoBase64 = null;
 
-    // try {
-    //   const response = await fetch(logoUrl);
-    //   const blob = await response.blob();
-    //   logoBase64 = await new Promise((resolve) => {
-    //     const reader = new FileReader();
-    //     reader.onloadend = () => resolve(reader.result);
-    //     reader.readAsDataURL(blob);
-    //   });
-    // } catch (error) {
-    //   console.error('Erro ao carregar o logo:', error);
-    // }
+    try {
+      const response = await fetch(logoUrl);
+      const blob = await response.blob();
+      logoBase64 = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      console.error('Erro ao carregar o logo:', error);
+    }
 
-    // // Cabeçalho com logo centralizado
-    // if (logoBase64) {
-    //   const logoWidth = 70;
-    //   const logoHeight = 30;
-    //   const pageWidth = doc.internal.pageSize.getWidth();
-    //   const logoX = (pageWidth - logoWidth) / 2; // Centraliza horizontalmente
+    // Cabeçalho com logo centralizado
+    if (logoBase64) {
+      const logoWidth = 70;
+      const logoHeight = 30;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const logoX = (pageWidth - logoWidth) / 2; // Centraliza horizontalmente
 
-    //   // Adiciona o logo
-    //   doc.addImage({
-    //     imageData: logoBase64,
-    //     x: logoX,
-    //     y: y, // Usa a posição Y atual
-    //     width: logoWidth,
-    //     height: logoHeight,
-    //     format: 'PNG'
-    //   });
+      // Adiciona o logo
+      doc.addImage({
+        imageData: logoBase64,
+        x: logoX,
+        y: y, // Usa a posição Y atual
+        width: logoWidth,
+        height: logoHeight,
+        format: 'PNG'
+      });
 
-    //   y += logoHeight + 10; // Incrementa Y para posicionar o título abaixo
-    // }
+      y += logoHeight + 10; // Incrementa Y para posicionar o título abaixo
+    }
 
-    // Após o título principal e antes do subtítulo do veículo
-    doc.setFont("helvetica", "bold");
+    // // Após o título principal e antes do subtítulo do veículo
+    // doc.setFont("helvetica", "bold");
 
-    // Configurações para "Goodbye" (azul mais escuro)
-    doc.setTextColor(10, 150, 180); // Azul mais escuro
-    doc.setFontSize(22); // Um pouco maior que o título
-    doc.text("Goodbye", 95, y, { align: "center" });
+    // // Configurações para "Goodbye" (azul mais escuro)
+    // doc.setTextColor(10, 150, 180); // Azul mais escuro
+    // doc.setFontSize(22); // Um pouco maior que o título
+    // doc.text("Goodbye", 95, y, { align: "center" });
 
-    // Configurações para "Car" (laranja)
-    doc.setTextColor(255, 128, 0); // Laranja
-    doc.text("Car", 95 + doc.getTextWidth("Goodbye ") / 2, y);
+    // // Configurações para "Car" (laranja)
+    // doc.setTextColor(255, 128, 0); // Laranja
+    // doc.text("Car", 95 + doc.getTextWidth("Goodbye ") / 2, y);
 
-    y += 10;
+    // y += 10;
 
-    // Configurações para "Brasil" (preto)
-    doc.setTextColor(0, 0, 0); // Preto
-    doc.text("Brasil", 78 + doc.getTextWidth("Goodbye Car ") / 2, y, { align: "center" });
+    // // Configurações para "Brasil" (preto)
+    // doc.setTextColor(0, 0, 0); // Preto
+    // doc.text("Brasil", 78 + doc.getTextWidth("Goodbye Car ") / 2, y, { align: "center" });
 
     // Espaçamento após o texto
-    y += 15; // Incrementa Y para o próximo elemento
+    // y += 15; // Incrementa Y para o próximo elemento
 
 
     // Título principal (centralizado abaixo do logo)
@@ -222,6 +222,48 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
     doc.line(20, y, 190, y);
     y += 5;
 
+    // Seção: Estados do Veículo (agora com bolinhas coloridas)
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...mainColor);
+    doc.text("Estados do Veículo", 20, y);
+    y += 8;
+
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(33, 37, 41);
+
+    const getColorForCondition = (value) => {
+      const val = (value || "").toLowerCase();
+      if (val.includes("bom") || val.includes("excelente")) return [0, 200, 0]; // verde
+      if (val.includes("regular")) return [255, 165, 0]; // amarelo
+      return [255, 0, 0]; // vermelho
+    };
+
+    const drawConditionItem = (label, value, x, y) => {
+      const text = `${label}: ${conditionMap[value] || "Não informado"}`;
+      const color = getColorForCondition(conditionMap[value] || "");
+
+      // Desenha bolinha colorida (círculo preenchido)
+      doc.setFillColor(...color);
+      doc.circle(x, y - 1.5, 2, 'F');
+
+      doc.text(text, x + 5, y);
+    };
+
+    // Esquerda
+    drawConditionItem("Pintura", vehicle.paintCondition, 20, y);
+    drawConditionItem("Interior", vehicle.interiorCondition, 20, y + 8);
+
+    // Direita
+    drawConditionItem("Pneus", vehicle.tiresCondition, 105, y);
+
+    y += 18;
+
+    // Divider
+    doc.setDrawColor(...mainColor);
+    doc.line(20, y, 190, y);
+
+    y += 5;
+
     // Seção: Itens do Veículo
     if (vehicle.items?.length > 0) {
       doc.setFont("helvetica", "bold");
@@ -276,12 +318,16 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
       const askingFormatted = `Pedida: R$ ${vehicle.askingPrice}`;
 
       doc.setFillColor(240, 240, 240); // fundo cinza claro para destaque
-      doc.rect(20, y - 6, 170, 16, 'F'); // caixa de fundo
+      doc.rect(20, y - 6, 170, 24, 'F'); // caixa de fundo aumentada para 24 de altura
 
       doc.text(fipeFormatted, 25, y);
       doc.text(askingFormatted, 25, y + 7);
 
-      y += 16; // espaço após seção
+      doc.setFont("helvetica", "bold"); // muda para negrito
+      doc.text("Aceitamos contra oferta!", 25, y + 16); // posição ajustada
+      doc.setFont("helvetica", "normal"); // volta ao normal
+
+      y += 22; // espaço aumentado após seção
 
       doc.setDrawColor(...mainColor);
       doc.line(20, y, 190, y);
