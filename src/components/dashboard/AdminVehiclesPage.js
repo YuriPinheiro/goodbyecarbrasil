@@ -306,6 +306,7 @@ const AdminVehiclesPage = () => {
         if (isEditing && selectedVehicle) {
             // Update existing vehicle
             setVehicles(vehicles.map((v) => (v.id === selectedVehicle.id ? { ...v, ...vehicleData } : v)))
+            fetchVehicles();
         } else {
             // Add new vehicle
             const newVehicle = {

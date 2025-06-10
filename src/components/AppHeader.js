@@ -8,7 +8,8 @@ import {
     Toolbar,
     Avatar,
     Menu,
-    MenuItem
+    MenuItem,
+    useMediaQuery
 } from '@mui/material';
 
 import {
@@ -28,7 +29,9 @@ const AppHeader = () => {
     const classes = useStyles();
     const navigate = useNavigate();
     const { toggleMenu } = useMenu();
+
     const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { user, logout } = useAuth();
 
 
@@ -91,17 +94,18 @@ const AppHeader = () => {
             {/* App Bar */}
             <AppBar position="fixed" className={classes.appBar}>
                 <Toolbar>
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        edge="start"
-                        onClick={handleDrawerToggle}
-                        className={classes.menuButton}
-                    >
-                        <MenuIcon />
-                    </IconButton>
+                    {!isMobile &&
+                        <IconButton
+                            color="inherit"
+                            aria-label="open drawer"
+                            edge="start"
+                            onClick={handleDrawerToggle}
+                            className={classes.menuButton}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                    }
                     <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <CarIcon sx={{ color: theme.palette.primary.main, mr: 1 }} />
                         <Typography variant="h6" noWrap component="div" fontWeight="bold">
                             GoodByeCar Brasil
                         </Typography>

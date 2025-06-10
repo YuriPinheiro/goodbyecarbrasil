@@ -726,6 +726,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
       </DialogContent>
       <DialogActions sx={{ px: 3, py: 2, bgcolor: theme.palette.background.default }}>
         <Button
+          size="small"
           startIcon={<DeleteIcon />}
           onClick={onDelete}
           sx={{
@@ -737,6 +738,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
         </Button>
         {view &&
           <Button
+            size="small"
             startIcon={<DownloadIcon />}
             onClick={() => generateVehiclePDF(vehicle)}
             sx={{ color: "primary.main" }}
@@ -745,6 +747,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
           </Button>
         }
         <Button
+          size="small"
           onClick={onClose}
           sx={{
             color: theme.palette.text.primary,
@@ -753,6 +756,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
           Fechar
         </Button>
         <Button
+          size="small"
           startIcon={<EditIcon />}
           onClick={onEdit}
           variant="contained"
