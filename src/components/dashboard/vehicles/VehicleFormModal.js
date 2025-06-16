@@ -24,7 +24,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { Close as CloseIcon, CloudUpload as CloudUploadIcon, CameraAlt as CameraAltIcon } from "@mui/icons-material";
-import { uploadVehiclePhoto, addVehicle, updateVehicle, fetchCarBrands, fetchCarModels } from "../../../stores/VeihcleService";
+import { uploadVehiclePhoto, addVehicle, updateVehicle, fetchCarBrands, fetchCarModels, fetchFipeByPlate } from "../../../stores/VeihcleService";
 
 const photoTypes = [
   { id: "front", label: "Frente", description: "Foto diretamente da frente do veículo" },
@@ -109,6 +109,8 @@ const conditionOptions = [
 ];
 
 const steps = ['Informações do Veículo', 'Fotos do Veículo'];
+
+const apiKey = process.env.REACT_APP_FIPE_API_KEY;
 
 const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, onFeedback, view }) => {
   const theme = useTheme();
@@ -499,6 +501,11 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
       });
     }
   };
+
+  const onClickPlate = async () => {
+    const response = await fetchFipeByPlate("ITW5083", apiKey);
+    console.log(response)
+  }
 
   const handleFileChange = (type, event) => {
     const file = event.target.files[0];
@@ -1202,6 +1209,9 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
           }}
         >
           <CloseIcon />
+        </IconButton>
+        <IconButton onClick={onClickPlate}>
+          a
         </IconButton>
       </DialogTitle>
 
