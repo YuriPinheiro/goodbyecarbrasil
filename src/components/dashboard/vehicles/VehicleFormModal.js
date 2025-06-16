@@ -28,14 +28,13 @@ import { uploadVehiclePhoto, addVehicle, updateVehicle, fetchCarBrands, fetchCar
 
 const photoTypes = [
   { id: "front", label: "Frente", description: "Foto diretamente da frente do veículo" },
-  { id: "diagonalFrontRight", label: "Diagonal frontal - lado 2", description: "Foto diagonal frontal do lado do passageiro" },
-  { id: "side", label: "Lateral", description: "Foto lateral do veículo (use também as diagonais)" },
-  { id: "diagonalRearRight", label: "Diagonal traseira - lado 2", description: "Foto diagonal traseira do lado do passageiro" },
-  { id: "back", label: "Traseira", description: "Foto diretamente da traseira do veículo" },
-  { id: "diagonalRearLeft", label: "Diagonal traseira - lado 1", description: "Foto diagonal traseira do lado do motorista" },
   { id: "diagonalFrontLeft", label: "Diagonal frontal - lado 1", description: "Foto diagonal frontal do lado do motorista" },
-  { id: "engine", label: "Motor", description: "Foto do compartimento do motor com o capô aberto" },
+  { id: "diagonalRearLeft", label: "Diagonal traseira - lado 1", description: "Foto diagonal traseira do lado do motorista" },
+  { id: "back", label: "Traseira", description: "Foto diretamente da traseira do veículo" },
   { id: "trunk", label: "Porta-malas", description: "Foto do porta-malas aberto" },
+  { id: "diagonalRearRight", label: "Diagonal traseira - lado 2", description: "Foto diagonal traseira do lado do passageiro" },
+  { id: "diagonalFrontRight", label: "Diagonal frontal - lado 2", description: "Foto diagonal frontal do lado do passageiro" },
+  { id: "engine", label: "Motor", description: "Foto do compartimento do motor com o capô aberto" },
   { id: "Km", label: "Quilometragem", description: "Foto do contador de quilometros do veículo" },
   { id: "backSeat", label: "Banco traseiro", description: "Foto dos bancos traseiros do veículo" },
   { id: "damage1", label: "Avarias - Foto 1 (Opcional)", description: "Foto de avarias ou danos no veículo" },
@@ -44,40 +43,54 @@ const photoTypes = [
 ];
 
 const vehicleItems = [
-  { id: "air_conditioning", label: "Ar condicionado" },
-  { id: "spare_key", label: "Chave reserva" },
-  { id: "electric_windows", label: "Vidros elétricos" },
+  // Mantidos
   { id: "hydraulic_steering", label: "Direção hidráulica" },
+  { id: "air_conditioning", label: "Ar condicionado" },
+  { id: "electric_windows", label: "Vidros elétricos" },
+  { id: "electric_locks", label: "Travas elétricas" },
   { id: "electric_steering", label: "Direção elétrica" },
-  { id: "assisted_steering", label: "Direção assistida" },
   { id: "airbag", label: "Air bag" },
   { id: "dual_airbag", label: "Air bag duplo" },
+  { id: "abs_brakes", label: "Freios ABS" },
+
+  // Segurança
+  { id: "ebd_brakes", label: "Freios EBD" },
+  { id: "traction_control", label: "Controle de tração" },
+  { id: "stability_control", label: "Controle de estabilidade" },
   { id: "alarm", label: "Alarme" },
+  { id: "parking_sensor", label: "Sensor de estacionamento" },
+  { id: "reverse_sensor", label: "Sensor de ré" },
+  { id: "reverse_camera", label: "Câmera de ré" },
+
+  // Conforto e conveniência
   { id: "heater", label: "Ar quente" },
   { id: "electric_seats", label: "Bancos elétricos" },
   { id: "leather_seats", label: "Bancos em couro" },
-  { id: "reverse_camera", label: "Câmera de ré" },
+  { id: "electric_mirrors", label: "Retrovisores elétricos" },
+  { id: "height_adjustable_steering", label: "Volante com regulagem de altura" },
+  { id: "sunroof", label: "Teto solar" },
+
+  // Tecnologia
   { id: "onboard_computer", label: "Computador de bordo" },
-  { id: "traction_control", label: "Controle de tração" },
-  { id: "stability_control", label: "Controle de estabilidade" },
+  { id: "interface", label: "Interface" },
+  { id: "multimedia_center", label: "Central multimídia" },
+
+  // Externos e visibilidade
   { id: "rear_defroster", label: "Desembaçador traseiro" },
   { id: "fog_lights", label: "Farol neblina" },
-  { id: "abs_brakes", label: "Freios ABS" },
-  { id: "ebd_brakes", label: "Freios EBD" },
-  { id: "interface", label: "Interface" },
   { id: "rear_wiper", label: "Limpador traseiro" },
+  { id: "green_windows", label: "Vidros verdes" },
+
+  // Estilo e performance
+  { id: "alloy_wheels", label: "Rodas liga leve" },
+  { id: "turbo", label: "Turbo" },
+
+  // Itens de caçamba (pickup)
   { id: "tonneau_cover", label: "Lona marítima" },
   { id: "bed_liner", label: "Protetor de caçamba" },
-  { id: "electric_mirrors", label: "Retrovisores elétricos" },
-  { id: "alloy_wheels", label: "Rodas liga leve" },
-  { id: "parking_sensor", label: "Sensor de estacionamento" },
-  { id: "sunroof", label: "Teto solar" },
-  { id: "electric_locks", label: "Travas elétricas" },
-  { id: "turbo", label: "Turbo" },
-  { id: "green_windows", label: "Vidros verdes" },
-  { id: "height_adjustable_steering", label: "Volante com regulagem de altura" },
-  { id: "multimedia_center", label: "Central multimídia" },
-  { id: "reverse_sensor", label: "Sensor de ré" }
+
+  // Extra
+  { id: "assisted_steering", label: "Direção assistida" }
 ];
 
 const ownershipTimeOptions = [
@@ -99,7 +112,9 @@ const steps = ['Informações do Veículo', 'Fotos do Veículo'];
 
 const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, onFeedback, view }) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
+  const dialogContentRef = useRef(null);
+
   const [activeStep, setActiveStep] = useState(0);
   const [vehicleId, setVehicleId] = useState(null);
 
@@ -149,6 +164,7 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
   const years = Array.from({ length: 36 }, (_, i) => (currentYear - i).toString());
 
   useEffect(() => {
+    
     const loadBrands = async () => {
       if (open && availableBrands.length === 0) {
         setBrandsLoading(true);
@@ -233,6 +249,13 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
       });
     }
   }, [open, photoFiles]);
+
+  useEffect(() => {
+
+    if (dialogContentRef.current) {
+      dialogContentRef.current.scrollTop = 0;
+    }
+  }, [activeStep]); 
 
   const resetForm = () => {
     setBrand("");
@@ -1093,7 +1116,6 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
                       <Button
                         variant="outlined"
                         size="small"
-                        fullWidth
                         component="label"
                         sx={{
                           borderColor: theme.palette.primary.main,
@@ -1183,7 +1205,7 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
         </IconButton>
       </DialogTitle>
 
-      <DialogContent dividers sx={{ p: 3, bgcolor: theme.palette.background.default }}>
+      <DialogContent ref={dialogContentRef} dividers sx={{ p: 3, bgcolor: theme.palette.background.default }}>
         {errorMessage && (
           <Alert severity="error" sx={{ mb: 3 }}>
             {errorMessage}

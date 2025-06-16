@@ -35,14 +35,13 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
 
   const photoTypes = [
     { id: "front", label: "Frente", description: "Foto diretamente da frente do veículo" },
-    { id: "diagonalFrontRight", label: "Diagonal frontal - lado 2", description: "Foto diagonal frontal do lado do passageiro" },
-    { id: "side", label: "Lateral", description: "Foto lateral do veículo (use também as diagonais)" },
-    { id: "diagonalRearRight", label: "Diagonal traseira - lado 2", description: "Foto diagonal traseira do lado do passageiro" },
-    { id: "back", label: "Traseira", description: "Foto diretamente da traseira do veículo" },
-    { id: "diagonalRearLeft", label: "Diagonal traseira - lado 1", description: "Foto diagonal traseira do lado do motorista" },
     { id: "diagonalFrontLeft", label: "Diagonal frontal - lado 1", description: "Foto diagonal frontal do lado do motorista" },
-    { id: "engine", label: "Motor", description: "Foto do compartimento do motor com o capô aberto" },
+    { id: "diagonalRearLeft", label: "Diagonal traseira - lado 1", description: "Foto diagonal traseira do lado do motorista" },
+    { id: "back", label: "Traseira", description: "Foto diretamente da traseira do veículo" },
     { id: "trunk", label: "Porta-malas", description: "Foto do porta-malas aberto" },
+    { id: "diagonalRearRight", label: "Diagonal traseira - lado 2", description: "Foto diagonal traseira do lado do passageiro" },
+    { id: "diagonalFrontRight", label: "Diagonal frontal - lado 2", description: "Foto diagonal frontal do lado do passageiro" },
+    { id: "engine", label: "Motor", description: "Foto do compartimento do motor com o capô aberto" },
     { id: "Km", label: "Quilometragem", description: "Foto do contador de quilometros do veículo" },
     { id: "backSeat", label: "Banco traseiro", description: "Foto dos bancos traseiros do veículo" },
     { id: "damage1", label: "Avarias - Foto 1 (Opcional)", description: "Foto de avarias ou danos no veículo" },
@@ -50,42 +49,57 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
     { id: "damage3", label: "Avarias - Foto 3 (Opcional)", description: "Foto de avarias ou danos no veículo" }
   ];
 
-  const vehicleItems = {
-    air_conditioning: { label: "Ar condicionado" },
-    spare_key: { label: "Chave reserva" },
-    electric_windows: { label: "Vidros elétricos" },
-    hydraulic_steering: { label: "Direção hidráulica" },
-    electric_steering: { label: "Direção elétrica" },
-    assisted_steering: { label: "Direção assistida" },
-    airbag: { label: "Air bag" },
-    dual_airbag: { label: "Air bag duplo" },
-    alarm: { label: "Alarme" },
-    heater: { label: "Ar quente" },
-    electric_seats: { label: "Bancos elétricos" },
-    leather_seats: { label: "Bancos em couro" },
-    reverse_camera: { label: "Câmera de ré" },
-    onboard_computer: { label: "Computador de bordo" },
-    traction_control: { label: "Controle de tração" },
-    stability_control: { label: "Controle de estabilidade" },
-    rear_defroster: { label: "Desembaçador traseiro" },
-    fog_lights: { label: "Farol neblina" },
-    abs_brakes: { label: "Freios ABS" },
-    ebd_brakes: { label: "Freios EBD" },
-    interface: { label: "Interface" },
-    rear_wiper: { label: "Limpador traseiro" },
-    tonneau_cover: { label: "Lona marítima" },
-    bed_liner: { label: "Protetor de caçamba" },
-    electric_mirrors: { label: "Retrovisores elétricos" },
-    alloy_wheels: { label: "Rodas liga leve" },
-    parking_sensor: { label: "Sensor de estacionamento" },
-    sunroof: { label: "Teto solar" },
-    electric_locks: { label: "Travas elétricas" },
-    turbo: { label: "Turbo" },
-    green_windows: { label: "Vidros verdes" },
-    height_adjustable_steering: { label: "Volante com regulagem de altura" },
-    multimedia_center: { label: "Central multimídia" },
-    reverse_sensor: { label: "Sensor de ré" }
-  };
+
+  const vehicleItems = [
+    // Mantidos
+    { id: "hydraulic_steering", label: "Direção hidráulica" },
+    { id: "air_conditioning", label: "Ar condicionado" },
+    { id: "electric_windows", label: "Vidros elétricos" },
+    { id: "electric_locks", label: "Travas elétricas" },
+    { id: "electric_steering", label: "Direção elétrica" },
+    { id: "airbag", label: "Air bag" },
+    { id: "dual_airbag", label: "Air bag duplo" },
+    { id: "abs_brakes", label: "Freios ABS" },
+
+    // Segurança
+    { id: "ebd_brakes", label: "Freios EBD" },
+    { id: "traction_control", label: "Controle de tração" },
+    { id: "stability_control", label: "Controle de estabilidade" },
+    { id: "alarm", label: "Alarme" },
+    { id: "parking_sensor", label: "Sensor de estacionamento" },
+    { id: "reverse_sensor", label: "Sensor de ré" },
+    { id: "reverse_camera", label: "Câmera de ré" },
+
+    // Conforto e conveniência
+    { id: "heater", label: "Ar quente" },
+    { id: "electric_seats", label: "Bancos elétricos" },
+    { id: "leather_seats", label: "Bancos em couro" },
+    { id: "electric_mirrors", label: "Retrovisores elétricos" },
+    { id: "height_adjustable_steering", label: "Volante com regulagem de altura" },
+    { id: "sunroof", label: "Teto solar" },
+
+    // Tecnologia
+    { id: "onboard_computer", label: "Computador de bordo" },
+    { id: "interface", label: "Interface" },
+    { id: "multimedia_center", label: "Central multimídia" },
+
+    // Externos e visibilidade
+    { id: "rear_defroster", label: "Desembaçador traseiro" },
+    { id: "fog_lights", label: "Farol neblina" },
+    { id: "rear_wiper", label: "Limpador traseiro" },
+    { id: "green_windows", label: "Vidros verdes" },
+
+    // Estilo e performance
+    { id: "alloy_wheels", label: "Rodas liga leve" },
+    { id: "turbo", label: "Turbo" },
+
+    // Itens de caçamba (pickup)
+    { id: "tonneau_cover", label: "Lona marítima" },
+    { id: "bed_liner", label: "Protetor de caçamba" },
+
+    // Extra
+    { id: "assisted_steering", label: "Direção assistida" }
+  ];
 
   const ownershipTimeMap = {
     "less_than_6_months": "Menos de 6 meses",

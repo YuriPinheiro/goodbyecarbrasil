@@ -18,6 +18,25 @@ import RecoverPasswordPage from './pages/auth/RecoverPasswordPage';
 import DashboardPage from './pages/DashboardPage';
 import PrivateRoute from './routes/PrivateRoute';
 import TermsAndConditions from './pages/TermsAndConditions';
+import { Fab } from '@mui/material';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import { styled } from '@mui/system';
+
+const WhatsAppFab = styled(Fab)(({ theme }) => ({
+  position: 'fixed',
+  bottom: theme.spacing(3),
+  right: theme.spacing(3),
+  backgroundColor: '#25D366',
+  color: 'white',
+  '&:hover': {
+    backgroundColor: '#128C7E',
+  },
+  zIndex: 1101,
+  [theme.breakpoints.down('sm')]: { 
+    bottom: theme.spacing(12), 
+    right: theme.spacing(1)
+  }
+}));
 
 const App = () => {
   useEffect(() => {
@@ -27,6 +46,13 @@ const App = () => {
       once: true, // Se `true`, a animação ocorre apenas uma vez
     });
   }, []);
+
+  const whatsappNumber = '5554981702266'; // Substitua pelo número correto
+  const whatsappMessage = 'Olá, gostaria de mais informações!'; // Mensagem padrão
+
+  const handleWhatsAppClick = () => {
+    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -44,6 +70,14 @@ const App = () => {
           </Route>
         </Routes>
       </Router>
+      {/* Botão flutuante do WhatsApp */}
+      <WhatsAppFab
+        color="primary"
+        aria-label="WhatsApp"
+        onClick={handleWhatsAppClick}
+      >
+        <WhatsAppIcon fontSize="large" />
+      </WhatsAppFab>
     </ThemeProvider>
   );
 };
