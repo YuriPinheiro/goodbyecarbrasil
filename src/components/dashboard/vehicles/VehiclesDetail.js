@@ -50,56 +50,41 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
   ];
 
 
-  const vehicleItems = [
-    // Mantidos
-    { id: "hydraulic_steering", label: "Direção hidráulica" },
-    { id: "air_conditioning", label: "Ar condicionado" },
-    { id: "electric_windows", label: "Vidros elétricos" },
-    { id: "electric_locks", label: "Travas elétricas" },
-    { id: "electric_steering", label: "Direção elétrica" },
-    { id: "airbag", label: "Air bag" },
-    { id: "dual_airbag", label: "Air bag duplo" },
-    { id: "abs_brakes", label: "Freios ABS" },
-
-    // Segurança
-    { id: "ebd_brakes", label: "Freios EBD" },
-    { id: "traction_control", label: "Controle de tração" },
-    { id: "stability_control", label: "Controle de estabilidade" },
-    { id: "alarm", label: "Alarme" },
-    { id: "parking_sensor", label: "Sensor de estacionamento" },
-    { id: "reverse_sensor", label: "Sensor de ré" },
-    { id: "reverse_camera", label: "Câmera de ré" },
-
-    // Conforto e conveniência
-    { id: "heater", label: "Ar quente" },
-    { id: "electric_seats", label: "Bancos elétricos" },
-    { id: "leather_seats", label: "Bancos em couro" },
-    { id: "electric_mirrors", label: "Retrovisores elétricos" },
-    { id: "height_adjustable_steering", label: "Volante com regulagem de altura" },
-    { id: "sunroof", label: "Teto solar" },
-
-    // Tecnologia
-    { id: "onboard_computer", label: "Computador de bordo" },
-    { id: "interface", label: "Interface" },
-    { id: "multimedia_center", label: "Central multimídia" },
-
-    // Externos e visibilidade
-    { id: "rear_defroster", label: "Desembaçador traseiro" },
-    { id: "fog_lights", label: "Farol neblina" },
-    { id: "rear_wiper", label: "Limpador traseiro" },
-    { id: "green_windows", label: "Vidros verdes" },
-
-    // Estilo e performance
-    { id: "alloy_wheels", label: "Rodas liga leve" },
-    { id: "turbo", label: "Turbo" },
-
-    // Itens de caçamba (pickup)
-    { id: "tonneau_cover", label: "Lona marítima" },
-    { id: "bed_liner", label: "Protetor de caçamba" },
-
-    // Extra
-    { id: "assisted_steering", label: "Direção assistida" }
-  ];
+  const vehicleItems = {
+    hydraulic_steering: "Direção hidráulica",
+    air_conditioning: "Ar condicionado",
+    electric_windows: "Vidros elétricos",
+    electric_locks: "Travas elétricas",
+    electric_steering: "Direção elétrica",
+    airbag: "Air bag",
+    dual_airbag: "Air bag duplo",
+    abs_brakes: "Freios ABS",
+    ebd_brakes: "Freios EBD",
+    traction_control: "Controle de tração",
+    stability_control: "Controle de estabilidade",
+    alarm: "Alarme",
+    parking_sensor: "Sensor de estacionamento",
+    reverse_sensor: "Sensor de ré",
+    reverse_camera: "Câmera de ré",
+    heater: "Ar quente",
+    electric_seats: "Bancos elétricos",
+    leather_seats: "Bancos em couro",
+    electric_mirrors: "Retrovisores elétricos",
+    height_adjustable_steering: "Volante com regulagem de altura",
+    sunroof: "Teto solar",
+    onboard_computer: "Computador de bordo",
+    interface: "Interface",
+    multimedia_center: "Central multimídia",
+    rear_defroster: "Desembaçador traseiro",
+    fog_lights: "Farol neblina",
+    rear_wiper: "Limpador traseiro",
+    green_windows: "Vidros verdes",
+    alloy_wheels: "Rodas liga leve",
+    turbo: "Turbo",
+    tonneau_cover: "Lona marítima",
+    bed_liner: "Protetor de caçamba",
+    assisted_steering: "Direção assistida"
+  };
 
   const ownershipTimeMap = {
     "less_than_6_months": "Menos de 6 meses",
@@ -413,6 +398,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
         ref: modalRef
       }}
     >
+      {console.log(vehicle)}
       {/* Cabeçalho do modal */}
       <DialogTitle sx={{ m: 0, p: 2, bgcolor: theme.palette.background.primary }}>
         <Grid container justifyContent={'center'} sx={{ justifyContent: "center", alignItems: "center" }}>
@@ -671,7 +657,7 @@ const VehicleDetailsModal = ({ open, onClose, vehicle, onEdit, onDelete, view })
                   {vehicle.items.map(item => (
                     <Chip
                       key={item}
-                      label={vehicleItems[item].label}
+                      label={vehicleItems[item]}
                       size="small"
                       sx={{
                         backgroundColor: theme.palette.primary.light,

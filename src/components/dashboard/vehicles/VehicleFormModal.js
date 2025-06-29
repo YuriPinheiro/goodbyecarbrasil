@@ -612,17 +612,6 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
           setFipeValue("");
         }
 
-        // Criar descrição automática
-        const descricaoAutomatica = `Veículo ${veiculo.tipo_carroceria || 'tipo não especificado'} 
-${veiculo.cor ? `na cor ${veiculo.cor}` : ''} 
-${veiculo.combustivel ? `movido a ${veiculo.combustivel.toLowerCase()}` : ''}, 
-com ${veiculo.cilindradas ? `${veiculo.cilindradas} cilindradas` : 'cilindradas não especificadas'} 
-e ${veiculo.potencia ? `${veiculo.potencia}cv de potência` : 'potência não especificada'}. 
-${veiculo.procedencia ? `Procedência: ${veiculo.procedencia}.` : ''}`;
-
-        setDescription(descricaoAutomatica);
-
-
         // Mostrar alerta de sucesso
         setErrorMessage(null);
         onFeedback({
