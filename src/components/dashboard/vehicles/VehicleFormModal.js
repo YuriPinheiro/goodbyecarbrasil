@@ -21,10 +21,13 @@ import {
   Stepper,
   Step,
   StepLabel,
+  InputAdornment,
+  Chip,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { Close as CloseIcon, CloudUpload as CloudUploadIcon, CameraAlt as CameraAltIcon } from "@mui/icons-material";
-import { uploadVehiclePhoto, addVehicle, updateVehicle, fetchCarBrands, fetchCarModels } from "../../../stores/VeihcleService";
+import { Close as CloseIcon, CloudUpload as CloudUploadIcon, CameraAlt as CameraAltIcon, Search as SearchIcon } from "@mui/icons-material";
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import { uploadVehiclePhoto, addVehicle, updateVehicle, fetchCarBrands, fetchCarModels, fetchFipeByPlate } from "../../../stores/VeihcleService";
 
 const photoTypes = [
   { id: "front", label: "Frente", description: "Foto diretamente da frente do veículo" },
@@ -110,7 +113,7 @@ const conditionOptions = [
 
 const steps = ['Informações do Veículo', 'Fotos do Veículo'];
 
-// const apiKey = process.env.REACT_APP_FIPE_API_KEY;
+const apiKey = process.env.REACT_APP_FIPE_API_KEY;
 
 const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, onFeedback, view }) => {
   const theme = useTheme();
@@ -160,13 +163,14 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
   const [errorMessage, setErrorMessage] = useState("");
   const [brandsLoading, setBrandsLoading] = useState(false);
   const [modelsLoading, setModelsLoading] = useState(false);
+  const [fipeLoading, setFipeLoading] = useState(false);
   const [availableBrands, setAvailableBrands] = useState([]);
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 36 }, (_, i) => (currentYear - i).toString());
 
   useEffect(() => {
-    
+
     const loadBrands = async () => {
       if (open && availableBrands.length === 0) {
         setBrandsLoading(true);
@@ -257,7 +261,7 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
     if (dialogContentRef.current) {
       dialogContentRef.current.scrollTop = 0;
     }
-  }, [activeStep]); 
+  }, [activeStep]);
 
   const resetForm = () => {
     setBrand("");
@@ -502,11 +506,6 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
     }
   };
 
-  // const onClickPlate = async () => {
-  //   const response = await fetchFipeByPlate("ITW5083", apiKey);
-  //   console.log(response)
-  // }
-
   const handleFileChange = (type, event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -526,8 +525,179 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
     );
   };
 
+  const handleFipeSearch = async () => {
+    if (!plate || plate.length < 7) return;
+
+    setFipeLoading(true);
+    try {
+      const response = await fetchFipeByPlate(plate, apiKey);
+
+      if (response.success) {
+        console.log(response);
+
+        const veiculo = response.data.veiculo;
+        const fipes = response.data.fipes;
+
+        // 1. Tratar marca e modelo (exemplo: "Nissan/march Sv Flex")
+        const marcaModelo = veiculo.marca_modelo || "";
+        let marca = "";
+        let modelo = "";
+
+        // Separar marca e modelo (dividindo por '/')
+        if (marcaModelo.includes('/')) {
+          const parts = marcaModelo.split('/');
+          marca = parts[0]?.trim() || "";
+          console.log(marca)
+          modelo = parts[1]?.trim() || "";
+
+          // Remover "Flex" do modelo se existir (opcional)
+          modelo = modelo.replace(/Flex$/i, '').trim();
+
+          const foundBrand = availableBrands.find(b =>
+            normalizeText(marca).includes(normalizeText(b.nome)) ||
+            normalizeText(b.nome).includes(normalizeText(marca))
+          );
+
+          if (foundBrand) {
+            marca = foundBrand;
+          }
+
+        } else {
+          // Se não estiver no formato esperado, tentar encontrar a marca na lista disponível
+          const foundBrand = availableBrands.find(b =>
+            normalizeText(marcaModelo).includes(normalizeText(b.nome)) ||
+            normalizeText(b.nome).includes(normalizeText(marcaModelo))
+          );
+
+          if (foundBrand) {
+            marca = foundBrand;
+            modelo = marcaModelo.replace(foundBrand.nome, '').trim();
+          } else {
+            marca = marcaModelo;
+            modelo = "";
+          }
+        }
+        // 2. Tratar ano (exemplo: "2012/2013")
+        const anoCompleto = veiculo.ano || "";
+        let anoFabricacao = "";
+        let anoModelo = "";
+
+        if (anoCompleto.includes('/')) {
+          const anos = anoCompleto.split('/');
+          anoFabricacao = anos[0]?.trim() || "";
+          anoModelo = anos[1]?.trim() || "";
+
+          // Se o ano do modelo não foi preenchido, usar o mesmo ano de fabricação
+          if (!anoModelo && anoFabricacao) {
+            anoModelo = anoFabricacao;
+          }
+        } else {
+          anoFabricacao = anoCompleto;
+          anoModelo = anoCompleto;
+        }
+
+        // Preencher os campos com os dados da FIPE
+        setBrand(marca);
+        setModel(modelo);
+        setYear(anoFabricacao);
+        setModelYear(anoModelo);
+
+        // Preencher valor da FIPE (pegar o primeiro valor da lista de fipes)
+        if (fipes.length > 0 && fipes[0].valor) {
+          setFipeValue(`R$ ${fipes[0].valor.toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })}`);
+        } else {
+          setFipeValue("");
+        }
+
+        // Criar descrição automática
+        const descricaoAutomatica = `Veículo ${veiculo.tipo_carroceria || 'tipo não especificado'} 
+${veiculo.cor ? `na cor ${veiculo.cor}` : ''} 
+${veiculo.combustivel ? `movido a ${veiculo.combustivel.toLowerCase()}` : ''}, 
+com ${veiculo.cilindradas ? `${veiculo.cilindradas} cilindradas` : 'cilindradas não especificadas'} 
+e ${veiculo.potencia ? `${veiculo.potencia}cv de potência` : 'potência não especificada'}. 
+${veiculo.procedencia ? `Procedência: ${veiculo.procedencia}.` : ''}`;
+
+        setDescription(descricaoAutomatica);
+
+
+        // Mostrar alerta de sucesso
+        setErrorMessage(null);
+        onFeedback({
+          text: "Dados da FIPE carregados com sucesso!",
+          severity: "success"
+        });
+      } else {
+        // Mostrar alerta de erro
+        setErrorMessage(response.error.message);
+        onFeedback({
+          text: response.error.message,
+          severity: "warning"
+        });
+      }
+    } catch (error) {
+      console.error("Erro na busca FIPE:", error);
+      setErrorMessage("Erro ao consultar dados da FIPE");
+      onFeedback({
+        text: "Erro ao consultar dados da FIPE",
+        severity: "error"
+      });
+    } finally {
+      setFipeLoading(false);
+    }
+  };
+
+  const normalizeText = (text) => {
+    if (!text) return '';
+
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ''); // Remove caracteres especiais
+  };
+
   const renderStep1 = () => (
-    <Grid container spacing={3}>
+    <Grid container spacing={3} alignItems={"center"}>
+      <Grid size={{ xs: 12, md: 4 }}>
+        <TextField
+          fullWidth
+          label="Placa"
+          value={plate}
+          onChange={(e) => {
+            const value = e.target.value.toUpperCase();
+            setPlate(value.replace(/[^A-Z0-9]/g, '').substring(0, 7));
+            if (value && errors.plate) {
+              setErrors(prev => {
+                const newErrors = { ...prev };
+                delete newErrors.plate;
+                return newErrors;
+              });
+            }
+          }}
+          required
+          error={!!errors.plate}
+          helperText={errors.plate}
+          inputProps={{
+            maxLength: 7,
+          }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={handleFipeSearch}
+                  edge="end"
+                  disabled={!plate || plate.length < 7 || fipeLoading}
+                >
+                  {fipeLoading ? <CircularProgress size={24} /> : <SearchIcon />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Grid>
       <Grid size={{ xs: 12, md: 4 }}>
         <Autocomplete
           value={brand}
@@ -655,28 +825,7 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
         />
       </Grid>
       <Grid size={{ xs: 12, md: 4 }}>
-        <TextField
-          fullWidth
-          label="Placa"
-          value={plate}
-          onChange={(e) => {
-            const value = e.target.value.toUpperCase();
-            setPlate(value.replace(/[^A-Z0-9]/g, '').substring(0, 7));
-            if (value && errors.plate) {
-              setErrors(prev => {
-                const newErrors = { ...prev };
-                delete newErrors.plate;
-                return newErrors;
-              });
-            }
-          }}
-          required
-          error={!!errors.plate}
-          helperText={errors.plate}
-          inputProps={{
-            maxLength: 7,
-          }}
-        />
+
       </Grid>
       <Grid size={{ xs: 12, md: 4 }}>
         <TextField
@@ -700,7 +849,6 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
           }}
           required
           error={!!errors.mileage}
-          helperText={errors.mileage || "Máximo 999.999 km"}
           InputProps={{
             endAdornment: <Typography variant="body2">km</Typography>,
             inputProps: {
@@ -843,6 +991,25 @@ const VehicleFormModal = ({ open, onClose, onSave, vehicle, isEditing, userId, o
           )}
         />
       </Grid>
+      {fipeValue && (
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Chip
+            icon={<MonetizationOnIcon />}
+            label={`Valor FIPE: ${fipeValue}`}
+            color="success"
+            variant="outlined"
+            sx={{
+              py: 2,
+              px: 3,
+              fontSize: '1rem',
+              '& .MuiChip-icon': {
+                fontSize: '1.2rem',
+                color: theme.palette.success.main
+              }
+            }}
+          />
+        </Grid>
+      )}
       <Grid size={{ xs: 12 }}>
         <TextField
           fullWidth
